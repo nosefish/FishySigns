@@ -1,0 +1,6 @@
+name = FishySigns
+main-class = de.nosefish.fishysigns.plugin.FishySigns
+isLibrary = false
+author = nosefish
+version = 0.0.5
+dependencies = FishyLib

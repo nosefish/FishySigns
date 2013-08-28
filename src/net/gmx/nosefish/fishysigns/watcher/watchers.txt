@@ -1,0 +1,5 @@
+- Watchers are singletons with a static initializer.
+They must be accessed by their static getInstance method.
+
+- Watchers must not retain references to Activatables.
+All access to Activatables must be done via their id through the ActivationManager.
