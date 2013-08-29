@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import net.gmx.nosefish.fishylib.worldmath.FishyDirection;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.canarymod.api.entity.living.humanoid.Player;
+import net.canarymod.api.world.blocks.BlockType;
 import net.canarymod.api.world.blocks.Sign;
 import net.gmx.nosefish.fishysigns.activator.Activatable;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
@@ -58,7 +59,17 @@ public abstract class FishySign implements Activatable {
 		}
 	}
 
+	public final boolean isWallSign() {
+		return this.type == BlockType.WallSign.getId();
+	}
+	
+	public final boolean isSignPost() {
+		return this.type == BlockType.SignPost.getId();
+	}
 
+	public String getLine(int line) {
+		return this.text[line];
+	}
 	/**
 	 * Called when a sign is loaded that matches the <code>@FishySignIdentifier</code> regex.
 	 * This might be outside the server thread. Do not access the world.

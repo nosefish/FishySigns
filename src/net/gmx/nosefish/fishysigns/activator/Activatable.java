@@ -1,6 +1,6 @@
 package net.gmx.nosefish.fishysigns.activator;
 
-import net.gmx.nosefish.fishylib.worldmath.FishyLocation;
+import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 
 
 
@@ -36,7 +36,7 @@ public interface Activatable {
 	 * 
 	 * @return the location of the <code>Activatable</code>.
 	 */
-	public FishyLocation getLocation();
+	public FishyLocationInt getLocation();
 	
 	/**
 	 * Called when the <code>Activatable</code> has been registered. All initialization code goes here,

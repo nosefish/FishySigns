@@ -26,13 +26,13 @@ public class FishySignFinderTask extends FishyTask{
 		List<UnloadedSign> signsToLoad= new LinkedList<UnloadedSign>();
 		for (FishyChunk fishyChunk : chunks) {
 			World world = fishyChunk.getWorld().getWorldIfLoaded();
-			//TODO: bug workaround: world.getChunk needs world coordinates instead of chunk coordinates. Will probably break.
+			// TODO this is a bug workaround: 
+			// world.getChunk needs world coordinates instead of chunk coordinates. Will probably break.
 			Chunk chunk = world.getChunk(fishyChunk.getIntX(), fishyChunk.getIntZ());
 			if (chunk != null) {
 				for (TileEntity tileEntity : chunk.getTileEntityMap().values()) {
 					if (tileEntity instanceof Sign) {
 						signsToLoad.add(new UnloadedSign((Sign)tileEntity));
-						System.out.println("FishySignFinder added sign to load");
 					}
 				}
 			} else {

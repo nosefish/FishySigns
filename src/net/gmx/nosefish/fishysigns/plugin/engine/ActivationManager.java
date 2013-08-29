@@ -38,8 +38,8 @@ public final class ActivationManager {
 	private final Lock indexWriteLock = indexLock.writeLock();
 	private long idCounter; // guarded by indexLock
 	private Map<Long, Activatable> idIndex; // guarded by indexLock
-	private Map<FishyLocation, Long> locationIndex; // guarded by indexLock
-	private ConcurrentMapWithTreeSet<FishyLocation, Long> chunkIndex; // guarded by indexLock
+	private Map<FishyLocationInt, Long> locationIndex; // guarded by indexLock
+	private ConcurrentMapWithTreeSet<FishyLocationInt, Long> chunkIndex; // guarded by indexLock
 	
 	/**
 	 * Private constructor for singleton
@@ -47,8 +47,8 @@ public final class ActivationManager {
 	private ActivationManager() {
 		this.idCounter = 0;
 		this.idIndex = new HashMap<Long, Activatable>(64, 0.8F);
-		this.locationIndex = new HashMap<FishyLocation, Long>(64, 0.8F);
-		this.chunkIndex = new ConcurrentMapWithTreeSet<FishyLocation, Long>();
+		this.locationIndex = new HashMap<FishyLocationInt, Long>(64, 0.8F);
+		this.chunkIndex = new ConcurrentMapWithTreeSet<FishyLocationInt, Long>();
 	}
 	
 	/**

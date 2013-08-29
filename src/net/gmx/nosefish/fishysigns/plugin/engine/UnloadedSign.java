@@ -19,6 +19,11 @@ public class UnloadedSign {
 		     BlockInfo.getSignDirection(sign.getBlock().getTypeId(), sign.getBlock().getData()),
 		     sign.getBlock().getTypeId(),
 		     sign.getText());
+		for (int i = 0; i < 4; ++i) {
+			if (text[i] == null) {
+				text[i] = "";
+			}
+		}
 	}
 	
 	public UnloadedSign(FishyLocationInt location,
