@@ -1,4 +1,4 @@
-package net.gmx.nosefish.fishysigns.signs;
+package net.gmx.nosefish.fishysigns.signs.plumbing;
 
 import java.util.Arrays;
 
@@ -8,10 +8,10 @@ import java.util.Arrays;
  * @author Stefan Steinheimer
  *
  */
-public class FishySignInput {
-	Boolean[] inputs;
+public class FishySignSignal {
+	boolean[] inputs;
 	
-	public FishySignInput(Boolean... inputs) {
+	public FishySignSignal(boolean... inputs) {
 		this.inputs = inputs.clone();
 	}
 	
@@ -19,8 +19,12 @@ public class FishySignInput {
 		return inputs.length;
 	}
 	
-	public Boolean getState(int pin) {
+	public boolean getState(int pin) {
 		return inputs[pin];
+	}
+	
+	public boolean[] toArray() {
+		return inputs.clone();
 	}
 
 	@Override
@@ -37,7 +41,7 @@ public class FishySignInput {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FishySignInput other = (FishySignInput) obj;
+		FishySignSignal other = (FishySignSignal) obj;
 		return Arrays.equals(inputs, other.inputs);
 	}
 	
@@ -46,12 +50,7 @@ public class FishySignInput {
 		StringBuilder build = new StringBuilder(8);
 		build.append("[");
 		for (int i = 0; i < inputs.length; ++i) {
-			Boolean b = inputs[i];
-			if (b == null) {
-				build.append("null");
-			} else {
-				build.append(b.booleanValue());
-			}
+			build.append(inputs[i]);
 			if (i < inputs.length - 1) {
 				build.append(", ");
 			}

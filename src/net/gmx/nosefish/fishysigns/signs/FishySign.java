@@ -22,6 +22,13 @@ import net.gmx.nosefish.fishysigns.plugin.engine.UnloadedSign;
  */
 public abstract class FishySign implements Activatable {
 	public static final String[] EMPTY_SIGN_TEXT = { "", "", "", "" };
+	
+	// useful relative directions
+	protected final FishyDirection FRONT;
+	protected final FishyDirection LEFT;
+	protected final FishyDirection RIGHT;
+	protected final FishyDirection BACK;
+	
 	protected String[] text;
 	protected final FishyLocationInt location;
 	protected final FishyDirection direction;
@@ -29,47 +36,6 @@ public abstract class FishySign implements Activatable {
 	private final AtomicLong id; // will only be changed once during sign creation
 	
 	
-	/**
-	 * Do not call this constructor directly.
-	 * Use <code>loadAndRegister</code> or <code>createAndRegister</code> to instantiate new FishySigns.
-	 * @param UnloadedSign sign
-	 */
-	protected FishySign(UnloadedSign sign) {
-		this.id = new AtomicLong(-1);
-		this.location = sign.getLocation();
-		this.text = sign.getText();
-		this.type = sign.getBlockType();
-		this.direction = sign.getFacingDirection();
-	}
-
-	@Override
-	public FishyLocationInt getLocation() {
-		return this.location;
-	}
-
-	@Override
-	public final long getID() {
-		return id.get();
-	}
-	
-	@Override
-	public final void setID(long id) {
-		if (this.id.get() == -1) {
-			this.id.set(id);
-		}
-	}
-
-	public final boolean isWallSign() {
-		return this.type == BlockType.WallSign.getId();
-	}
-	
-	public final boolean isSignPost() {
-		return this.type == BlockType.SignPost.getId();
-	}
-
-	public String getLine(int line) {
-		return this.text[line];
-	}
 	/**
 	 * Called when a sign is loaded that matches the <code>@FishySignIdentifier</code> regex.
 	 * This might be outside the server thread. Do not access the world.
@@ -79,7 +45,7 @@ public abstract class FishySign implements Activatable {
 	 * @return <code>true</code>, if the sign is valid and should be registered as a FishySign, <code>false</code> if it is invalid.
 	 */
 	public abstract boolean validateOnLoad();
-	
+
 	/**
 	 * Called when a sign is created that matches the <code>@FishySignIdentifier</code> regex.
 	 * This will always run in the server thread. It is safe to access the world.
@@ -90,23 +56,6 @@ public abstract class FishySign implements Activatable {
 	 * @return <code>true</code>, if the sign is valid and should be registered as a FishySign, <code>false</code> if it is invalid.
 	 */
 	public abstract boolean validateOnCreate(String playerName);
-	
-	/**
-	 * Factory method to instantiate a FishySign.
-	 * Called by FishySignLoaderTask when a sign is found in a newly loaded chunk.
-	 * 
-	 * @param sign
-	 * @return the newly loaded and registered FishySign, or null if it wasn't a valid FishySign
-	 */
-	public static boolean loadAndRegister(UnloadedSign sign) {
-		FishySign fishySign = FishySignClassLoader.getInstance().makeFishySign(sign);
-		if (fishySign != null) {
-			if (fishySign.validateOnLoad()) {
-				ActivationManager.getInstance().register(fishySign);
-			}
-		}
-		return (fishySign != null);
-	}
 
 	/**
 	 * Factory method to instantiate a FishySign.
@@ -125,5 +74,74 @@ public abstract class FishySign implements Activatable {
 			}
 		}
 		return (fishySign != null);
+	}
+
+	/**
+	 * Factory method to instantiate a FishySign.
+	 * Called by FishySignLoaderTask when a sign is found in a newly loaded chunk.
+	 * 
+	 * @param sign
+	 * @return the newly loaded and registered FishySign, or null if it wasn't a valid FishySign
+	 */
+	public static boolean loadAndRegister(UnloadedSign sign) {
+		FishySign fishySign = FishySignClassLoader.getInstance().makeFishySign(sign);
+		if (fishySign != null) {
+			if (fishySign.validateOnLoad()) {
+				ActivationManager.getInstance().register(fishySign);
+			}
+		}
+		return (fishySign != null);
+	}
+
+	@Override
+	public final FishyLocationInt getLocation() {
+		return this.location;
+	}
+
+	@Override
+	public final long getID() {
+		return id.get();
+	}
+	
+	public final boolean isWallSign() {
+		return this.type == BlockType.WallSign.getId();
+	}
+	
+	public final boolean isSignPost() {
+		return this.type == BlockType.SignPost.getId();
+	}
+
+	public final String getLine(int line) {
+		return this.text[line];
+	}
+	
+	/**
+	 * To be called by the ActivationManager.
+	 * Do not call yourself, or bad things will happen.
+	 * 
+	 * @param id the id given to this <code>Activatable</code> by the activation manager.
+	 */
+	@Override
+	public final void setID(long id) {
+		if (this.id.get() == -1) {
+			this.id.set(id);
+		}
+	}
+
+	/**
+	 * Do not call this constructor directly.
+	 * Use <code>loadAndRegister</code> or <code>createAndRegister</code> to instantiate new FishySigns.
+	 * @param UnloadedSign sign
+	 */
+	protected FishySign(UnloadedSign sign) {
+		this.id = new AtomicLong(-1);
+		this.location = sign.getLocation();
+		this.text = sign.getText();
+		this.type = sign.getBlockType();
+		this.direction = sign.getFacingDirection();
+		this.FRONT = direction;
+		this.BACK  = direction.opposite();
+		this.LEFT  = FishyDirection.nearestDirection(direction.toDegrees() + 90);
+		this.RIGHT = LEFT.opposite();
 	}
 }
