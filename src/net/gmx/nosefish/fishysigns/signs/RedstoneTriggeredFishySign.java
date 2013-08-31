@@ -54,6 +54,7 @@ public abstract class RedstoneTriggeredFishySign extends FishySign {
 	protected void initializeInputBox() {
 		FishyLocationInt[] inputLocations = this.getInputLocations();
 		inputBox = new FishyDirectInputBox(this.location, inputLocations.length, 1);
+		inputBox.setAllInputPins(inputLocations);
 		inputBox.wireAllToPin0();
 		inputBox.finishInit();
 	}

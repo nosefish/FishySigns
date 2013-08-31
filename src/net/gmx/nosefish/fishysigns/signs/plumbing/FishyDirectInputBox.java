@@ -70,7 +70,7 @@ public class FishyDirectInputBox {
 	
 	
 	public void setAllInputPins(FishyLocationInt[] locationArray) {
-		if (locationArray.length != physSignal.length) {
+		if (locationArray.length != getPhysicalPinCount()) {
 			throw new IllegalArgumentException("length of locationArray does not match pin count");
 		}
 		synchronized (lock) {
@@ -140,7 +140,7 @@ public class FishyDirectInputBox {
 	
 	public FishyLocationInt[] getInputLocations() {
 		synchronized(lock) {
-			return (FishyLocationInt[]) physInput.toArray();
+			return physInput.toArray(new FishyLocationInt[getPhysicalPinCount()]);
 		}
 	}
 	
@@ -179,10 +179,10 @@ public class FishyDirectInputBox {
 	
 	public void refreshSignSignal() {
 		synchronized(lock) {
-			for (int pin = 0; pin < getPhysicalPinCount(); pin++) {
+			for (int pin = 0; pin < getSignPinCount(); pin++) {
 				signSignal[pin] = false;
 			}
-			for (int pin = 0; pin < getPhysicalPinCount(); pin++) {
+			for (int pin = 0; pin < getSignPinCount(); pin++) {
 				signSignal[phys2sign.get(pin)] |= physSignal[pin];
 			}
 		}

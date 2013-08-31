@@ -55,7 +55,7 @@ public class FishyLeverOutputBox {
 	
 	public FishyLocationInt[] getOutputLocations() {
 		synchronized(lock) {
-			return (FishyLocationInt[]) physOutput.toArray();
+			return physOutput.toArray(new FishyLocationInt[getPinCount()]);
 		}
 	}
 	
