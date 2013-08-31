@@ -1,7 +1,7 @@
 package net.gmx.nosefish.fishysigns.signs;
 
 import net.gmx.nosefish.fishysigns.activator.Activator;
-import net.gmx.nosefish.fishysigns.activator.ActivatorPlayer;
+import net.gmx.nosefish.fishysigns.activator.ActivatorPlayerRightClick;
 import net.gmx.nosefish.fishysigns.plugin.engine.UnloadedSign;
 import net.gmx.nosefish.fishysigns.watcher.PlayerRightClickWatcher;
 
@@ -20,10 +20,10 @@ public abstract class FishyRightClickSign extends FishySign {
 
 	@Override
 	public void activate(Activator activator) {
-		if (! (activator instanceof ActivatorPlayer)) {
+		if (! (activator instanceof ActivatorPlayerRightClick)) {
 			return;
 		}
-		ActivatorPlayer ap = (ActivatorPlayer) activator;
+		ActivatorPlayerRightClick ap = (ActivatorPlayerRightClick) activator;
 		onPlayerRightClick(ap.getPlayerName());
 	}
 

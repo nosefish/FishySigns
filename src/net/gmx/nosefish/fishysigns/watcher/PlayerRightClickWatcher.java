@@ -4,7 +4,7 @@ import java.util.Set;
 
 import net.canarymod.api.world.blocks.Block;
 import net.gmx.nosefish.fishysigns.activator.Activator;
-import net.gmx.nosefish.fishysigns.activator.ActivatorPlayer;
+import net.gmx.nosefish.fishysigns.activator.ActivatorPlayerRightClick;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 import net.gmx.nosefish.fishysigns.world.ImmutableLocationBlockState;
@@ -48,7 +48,7 @@ public class PlayerRightClickWatcher extends BlockLocationWatcher{
 		public void doStuff() {
 			Set<Long> idSet = blockLocationIndex.get(blockState.getLocation());
 			if (idSet != null) {
-				Activator activator = new ActivatorPlayer(playerName, blockState);
+				Activator activator = new ActivatorPlayerRightClick(playerName, blockState);
 				synchronized(idSet) {
 					for (long id : idSet) {
 						ActivationManager.getInstance().activate(id, activator);

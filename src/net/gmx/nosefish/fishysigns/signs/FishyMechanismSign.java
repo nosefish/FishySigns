@@ -3,7 +3,7 @@ package net.gmx.nosefish.fishysigns.signs;
 
 
 import net.gmx.nosefish.fishysigns.activator.Activator;
-import net.gmx.nosefish.fishysigns.activator.ActivatorPlayer;
+import net.gmx.nosefish.fishysigns.activator.ActivatorPlayerRightClick;
 import net.gmx.nosefish.fishysigns.plugin.engine.UnloadedSign;
 import net.gmx.nosefish.fishysigns.watcher.PlayerRightClickWatcher;
 
@@ -15,8 +15,8 @@ public abstract class FishyMechanismSign extends RedstoneTriggeredFishySign {
 
 	@Override
 	public void activate(Activator activator) {
-		if (activator instanceof ActivatorPlayer) {
-			ActivatorPlayer ap = (ActivatorPlayer)activator;
+		if (activator instanceof ActivatorPlayerRightClick) {
+			ActivatorPlayerRightClick ap = (ActivatorPlayerRightClick)activator;
 			this.onPlayerRightClick(ap.getPlayerName());
 		} else {
 			super.activate(activator);

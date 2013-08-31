@@ -2,7 +2,6 @@ package net.gmx.nosefish.fishysigns.signs;
 
 import net.gmx.nosefish.fishylib.worldmath.FishyDirection;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
-import net.gmx.nosefish.fishylib.worldmath.FishyVectorInt;
 import net.gmx.nosefish.fishysigns.activator.Activator;
 import net.gmx.nosefish.fishysigns.activator.ActivatorRedstone;
 import net.gmx.nosefish.fishysigns.plugin.engine.UnloadedSign;
@@ -12,13 +11,6 @@ import net.gmx.nosefish.fishysigns.watcher.RedstoneChangeWatcher;
 
 
 public abstract class RedstoneTriggeredFishySign extends FishySign {
-	private static final FishyVectorInt[] relativeInputs = new FishyVectorInt[]{
-	                                                       new FishyVectorInt(1,0,0),
-	                                                       new FishyVectorInt(-1,0,0),
-	                                                       new FishyVectorInt(0,0,1),
-	                                                       new FishyVectorInt(0,0,-1)
-	                                                       };
-	
 	protected FishyDirectInputBox inputBox;
 
 	protected abstract void onRedstoneInputChange(FishySignSignal oldInput, FishySignSignal newInput);
@@ -57,43 +49,38 @@ public abstract class RedstoneTriggeredFishySign extends FishySign {
 
 	/**
 	 * Called in <code>initialize</code>. Override to your liking.
+	 * Default wires all blocks next to the sign to a single input pin.
 	 */
 	protected void initializeInputBox() {
-		if (FishyDirection.cardinalDirections.contains(this.direction)) {
-			FishyLocationInt frontBlock = location.addIntVector(FRONT.toUnitIntVector());
-			FishyLocationInt leftBlock = location.addIntVector(LEFT.toUnitIntVector());
-			FishyLocationInt rightBlock = location.addIntVector(RIGHT.toUnitIntVector());
-			FishyLocationInt backBlock = location.addIntVector(BACK.toUnitIntVector());
-			if (this.isWallSign()) {
-				int pinCount = 3;
-				inputBox = new FishyDirectInputBox(location, pinCount, pinCount);
-				inputBox.setAllInputPins(new FishyLocationInt[]{frontBlock, leftBlock, rightBlock});
-				inputBox.wireOneToOne();
-			} else {
-				// sign post
-				int pinCount = 4;
-				if (FishyDirection.cardinalDirections.contains(direction)) {
-					// oriented N/E/S/W
-					inputBox = new FishyDirectInputBox(location, pinCount, pinCount);
-					inputBox.setAllInputPins(new FishyLocationInt[]{frontBlock, leftBlock, rightBlock, backBlock});
-					inputBox.wireOneToOne();
-
-				}
-			}
-		} else {
-			// sign post in other orientation
-			// no well-defined input directions -> only one sign input
-			int pinCount = 4;
-			inputBox = new FishyDirectInputBox(this.location, pinCount, 1);
-			for (int pin = 0; pin < pinCount; ++pin) {
-				FishyLocationInt inputLocation = this.location.addIntVector(relativeInputs[pin]);
-				inputBox.setInputPinLocation(pin, inputLocation); 
-			}
-			inputBox.wireAllToPin0();
-		}
+		FishyLocationInt[] inputLocations = this.getInputLocations();
+		inputBox = new FishyDirectInputBox(this.location, inputLocations.length, 1);
+		inputBox.wireAllToPin0();
 		inputBox.finishInit();
 	}
-
+	
+	/**
+	 * Called by initializeInputBox.
+	 * @return the input locations
+	 */
+	protected FishyLocationInt[] getInputLocations() {
+		FishyLocationInt[] result; 
+		if (this.isWallSign()) {
+			result = new FishyLocationInt[] {
+			                 this.getLocation().addIntVector(FRONT.toUnitIntVector()),
+			                 this.getLocation().addIntVector(LEFT.toUnitIntVector()),
+			                 this.getLocation().addIntVector(RIGHT.toUnitIntVector())
+			             };
+		} else {
+			result = new FishyLocationInt[] {
+			                 this.getLocation().addIntVector(FishyDirection.NORTH.toUnitIntVector()),
+			                 this.getLocation().addIntVector(FishyDirection.EAST.toUnitIntVector()),
+			                 this.getLocation().addIntVector(FishyDirection.SOUTH.toUnitIntVector()),
+			                 this.getLocation().addIntVector(FishyDirection.WEST.toUnitIntVector())
+			             };
+		}
+		return result;
+	}
+	
 	
 	protected void registerInputsWithWatcher() {
 		for (FishyLocationInt blockLoc : inputBox.getInputLocations()) {

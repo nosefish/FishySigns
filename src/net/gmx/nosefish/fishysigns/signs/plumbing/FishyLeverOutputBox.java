@@ -27,6 +27,17 @@ public class FishyLeverOutputBox {
 		}
 	}
 	
+	public void setAllOutputLocations(FishyLocationInt[] locationArray) {
+		if (locationArray.length != getPinCount()) {
+			throw new IllegalArgumentException("length of locationArray does not match pin count");
+		}
+		synchronized (lock) {
+			for (int pin = 0; pin < getPinCount(); pin++) {
+				physOutput.add(pin, locationArray[pin]);
+			}
+		}
+	}
+	
 	public void swapOutputs(int pin1, int pin2) {
 		synchronized(lock) {
 			FishyLocationInt loc1 = physOutput.get(pin1);
@@ -45,6 +56,12 @@ public class FishyLeverOutputBox {
 	public FishyLocationInt[] getOutputLocations() {
 		synchronized(lock) {
 			return (FishyLocationInt[]) physOutput.toArray();
+		}
+	}
+	
+	public int getPin(FishyLocationInt location) {
+		synchronized(lock) {
+			return physOutput.indexOf(location);
 		}
 	}
 
