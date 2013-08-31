@@ -182,7 +182,7 @@ public class FishyDirectInputBox {
 			for (int pin = 0; pin < getSignPinCount(); pin++) {
 				signSignal[pin] = false;
 			}
-			for (int pin = 0; pin < getSignPinCount(); pin++) {
+			for (int pin = 0; pin < getPhysicalPinCount(); pin++) {
 				signSignal[phys2sign.get(pin)] |= physSignal[pin];
 			}
 		}
