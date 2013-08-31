@@ -11,6 +11,7 @@ import net.gmx.nosefish.fishysigns.world.Unsafe;
 
 public class FishyLeverOutputBox {
 	
+	protected Object lock = new Object();
 	protected final ArrayList<FishyLocationInt> physOutput;
 	protected final boolean[] physSignal;
 	
@@ -21,16 +22,20 @@ public class FishyLeverOutputBox {
 	}
 	
 	public void setOutputLocation(int pin, FishyLocationInt location){
-		physOutput.add(pin, location);
+		synchronized(lock) {
+			physOutput.add(pin, location);
+		}
 	}
 	
 	public void swapOutputs(int pin1, int pin2) {
-		FishyLocationInt loc1 = physOutput.get(pin1);
-		boolean state1 = physSignal[pin1];
-		physOutput.set(pin1, physOutput.get(pin2));
-		physSignal[pin1] = physSignal[pin2];
-		physOutput.set(pin2, loc1);
-		physSignal[pin2] = state1;
+		synchronized(lock) {
+			FishyLocationInt loc1 = physOutput.get(pin1);
+			boolean state1 = physSignal[pin1];
+			physOutput.set(pin1, physOutput.get(pin2));
+			physSignal[pin1] = physSignal[pin2];
+			physOutput.set(pin2, loc1);
+			physSignal[pin2] = state1;
+		}
 	}
 	
 	public void finishInit() {
@@ -38,7 +43,9 @@ public class FishyLeverOutputBox {
 	}
 	
 	public FishyLocationInt[] getOutputLocations() {
-		return null;
+		synchronized(lock) {
+			return (FishyLocationInt[]) physOutput.toArray();
+		}
 	}
 
 	public int getPinCount() {
@@ -46,36 +53,44 @@ public class FishyLeverOutputBox {
 	}
 	
 	public void getOutputFromWorld() {
-		for (int pin = 0; pin < getPinCount(); ++pin) {
-			FishyLocationInt location = physOutput.get(pin);
-			Block block = Unsafe.unsafeGetBlockAt(location);
-			physSignal[pin] = false;
-			if (block == null) {
-				continue;
-			}
-			short id = block.getTypeId();
-			short data = block.getData();
-			if (id == BlockType.Lever.getId()) {
-				physSignal[pin] = BlockInfo.getRedstonePower(id, data) > 0;
+		synchronized(lock) {
+			for (int pin = 0; pin < getPinCount(); ++pin) {
+				FishyLocationInt location = physOutput.get(pin);
+				Block block = Unsafe.unsafeGetBlockAt(location);
+				physSignal[pin] = false;
+				if (block == null) {
+					continue;
+				}
+				short id = block.getTypeId();
+				short data = block.getData();
+				if (id == BlockType.Lever.getId()) {
+					physSignal[pin] = BlockInfo.getRedstonePower(id, data) > 0;
+				}
 			}
 		}
 	}
 	
 	public FishySignSignal getSignal() {
-		return new FishySignSignal(physSignal);
+		synchronized(lock) {
+			return new FishySignSignal(physSignal);
+		}
 	}
 	
 	public void updateOutput(FishySignSignal signal) {
-		int lowerPinCount = Math.min(getPinCount(), signal.getNumberOfPins());
-		for (int pin = 0; pin < lowerPinCount; pin++) {
-			physSignal[pin] = signal.getState(pin);
+		synchronized(lock) {
+			int lowerPinCount = Math.min(getPinCount(), signal.getNumberOfPins());
+			for (int pin = 0; pin < lowerPinCount; pin++) {
+				physSignal[pin] = signal.getState(pin);
+			}
+			refreshOutput();
 		}
-		refreshOutput();
 	}
 	
 	public void refreshOutput() {
-		for (int pin = 0; pin < getPinCount(); ++pin) {
-			OutputLever.set(physOutput.get(pin), physSignal[pin]);
+		synchronized(lock) {
+			for (int pin = 0; pin < getPinCount(); ++pin) {
+				OutputLever.set(physOutput.get(pin), physSignal[pin]);
+			}
 		}
 	}
 }
