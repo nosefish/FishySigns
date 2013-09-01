@@ -18,7 +18,6 @@ public class ChangeSignTextTask extends FishyTask {
 	
 	private final FishyLocationInt signLoc;
 	private final String[] newText;
-	private final boolean sendPacket;
 	
 	/**
 	 * Constructor
@@ -32,10 +31,9 @@ public class ChangeSignTextTask extends FishyTask {
 	 * @param sendPacket
 	 *     whether or not to notify players of the sign update
 	 */
-	public ChangeSignTextTask(FishyLocationInt signLocation, String[] newText, boolean sendPacket) {
+	public ChangeSignTextTask(FishyLocationInt signLocation, String[] newText) {
 		this.signLoc = signLocation;
 		this.newText = newText;
-		this.sendPacket = sendPacket;
 		if (newText.length != NUM_LINES) {
 			throw new InvalidSignTextException("Invalid number of lines, expected " + 
 			                                    NUM_LINES +
@@ -67,9 +65,7 @@ public class ChangeSignTextTask extends FishyTask {
 					sign.setTextOnLine(newText[line], line);
 				}
 			}
-			if (sendPacket) {
-				sign.update();
-			}
+			sign.update();
 		}
 	}
 	

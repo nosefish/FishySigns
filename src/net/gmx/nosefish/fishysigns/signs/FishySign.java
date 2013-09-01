@@ -12,6 +12,7 @@ import net.gmx.nosefish.fishysigns.activator.Activatable;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
 import net.gmx.nosefish.fishysigns.plugin.engine.FishySignClassLoader;
 import net.gmx.nosefish.fishysigns.plugin.engine.UnloadedSign;
+import net.gmx.nosefish.fishysigns.task.common.ChangeSignTextTask;
 
 /**
  * All FishySigns must be thread safe! Only methods that are documented to be called
@@ -111,8 +112,26 @@ public abstract class FishySign implements Activatable {
 		return this.type == BlockType.SignPost.getId();
 	}
 
+	/**
+	 * Gets text on the specified line of the sign (0-3).
+	 * 
+	 * @param line the line number
+	 * @return the text on the line
+	 */
 	public final String getLine(int line) {
 		return this.text[line];
+	}
+	
+	/**
+	 * Writes the sign text to the sign in the world.
+	 */
+	protected synchronized void updateSignTextInWorld() {
+		String[] txt;
+		synchronized(this) {
+			txt = text.clone();
+		}
+		ChangeSignTextTask signUpdater = new ChangeSignTextTask(this.getLocation(), txt);
+		signUpdater.submit();
 	}
 	
 	/**
