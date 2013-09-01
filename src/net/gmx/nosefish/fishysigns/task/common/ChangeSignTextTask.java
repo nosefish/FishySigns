@@ -64,8 +64,8 @@ public class ChangeSignTextTask extends FishyTask {
                                 LINE_LENGTH +
                                 " are allowed on a sign.");
 					}
+					sign.setTextOnLine(newText[line], line);
 				}
-				sign.setTextOnLine(newText[line], line);
 			}
 			if (sendPacket) {
 				sign.update();
