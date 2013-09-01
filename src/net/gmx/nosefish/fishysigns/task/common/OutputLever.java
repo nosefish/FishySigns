@@ -46,8 +46,6 @@ public class OutputLever {
 	 */
 	private static class LeverSwitchTask extends FishyTask {
 		private static final int IDLE_MAX = 200; // stop task after 200 ticks without updates (~10s)
-		private static final int OR_LEVER_ON_BITS = 0x8;
-		private static final int AND_LEVER_OFF_BITS = ~0x8;
 		private final Queue<LeverUpdate> q = new ConcurrentLinkedQueue<LeverUpdate>();
 		private int idleCounter = 0;
 		
@@ -87,15 +85,10 @@ public class OutputLever {
 			                               update.location.getIntZ());
 			if (block.getTypeId() == BlockType.Lever.getId()) {
 				boolean isOn = BlockInfo.getRedstonePower(block.getTypeId(), block.getData()) > 0;
-				if (update.on && !isOn) {
-					// switch on
-					block.setData((short)(block.getData() | OR_LEVER_ON_BITS));
-					block.update();
-				} else if (! update.on && isOn) {
-					// switch off
-					block.setData((short)(block.getData() & AND_LEVER_OFF_BITS));
-					block.update();
-				}
+				if (update.on != isOn) {
+					// switch lever
+					block.rightClick(null);
+				} 
 			}
 		}
 	}

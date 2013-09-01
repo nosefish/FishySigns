@@ -94,7 +94,7 @@ public abstract class RedstoneTriggeredFishySign extends FishySign {
 	 * Use <code>FishySign.loadAndRegister</code> or <code>FishySign.createAndRegister</code> to instantiate new FishySigns.
 	 * @param UnloadedSign sign
 	 */
-	protected RedstoneTriggeredFishySign(UnloadedSign sign) {
+	public RedstoneTriggeredFishySign(UnloadedSign sign) {
 		super(sign);
 	}
 }

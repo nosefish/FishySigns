@@ -133,7 +133,7 @@ public abstract class FishySign implements Activatable {
 	 * Use <code>loadAndRegister</code> or <code>createAndRegister</code> to instantiate new FishySigns.
 	 * @param UnloadedSign sign
 	 */
-	protected FishySign(UnloadedSign sign) {
+	public FishySign(UnloadedSign sign) {
 		this.id = new AtomicLong(-1);
 		this.location = sign.getLocation();
 		this.text = sign.getText();
