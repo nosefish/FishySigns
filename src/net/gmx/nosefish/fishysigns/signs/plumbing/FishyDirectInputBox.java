@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import net.canarymod.api.world.blocks.Block;
 import net.gmx.nosefish.fishylib.blocks.BlockInfo;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.gmx.nosefish.fishysigns.activator.ImmutableRedstoneChange;
+import net.gmx.nosefish.fishysigns.world.ImmutableBlockState;
 import net.gmx.nosefish.fishysigns.world.Unsafe;
 
 /**
@@ -205,7 +205,7 @@ public class FishyDirectInputBox {
 			if (loc == null) {
 				return;
 			}
-			Block block = Unsafe.unsafeGetBlockAt(loc);
+			ImmutableBlockState block = Unsafe.unsafeGetBlockAt(loc);
 			if (block == null) {
 				return;
 			}

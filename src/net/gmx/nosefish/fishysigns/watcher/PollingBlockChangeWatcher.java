@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import net.gmx.nosefish.fishylib.worldmath.FishyChunk;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.canarymod.api.world.World;
 import net.canarymod.api.world.blocks.Block;
@@ -123,7 +124,7 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 		for (FishyLocationInt location : worldBlockStates.keySet()) {
 			World world = location.getWorld().getWorldIfLoaded();
 			if (world == null) continue;
-			if (! world.isChunkLoaded(location.getIntX(), location.getIntY(), location.getIntZ())) {
+			if (! world.isChunkLoaded(FishyChunk.worldToChunk(location.getIntX()), FishyChunk.worldToChunk(location.getIntZ()))) {
 				continue;
 			}
 			// world and chunk are loaded, let's check out this block

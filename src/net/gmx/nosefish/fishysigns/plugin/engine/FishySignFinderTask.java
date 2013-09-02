@@ -1,25 +1,24 @@
 package net.gmx.nosefish.fishysigns.plugin.engine;
 
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import net.gmx.nosefish.fishylib.worldmath.FishyChunk;
 import net.canarymod.api.world.Chunk;
 import net.canarymod.api.world.World;
 import net.canarymod.api.world.blocks.TileEntity;
 import net.canarymod.api.world.blocks.Sign;
-import net.gmx.nosefish.fishysigns.Log;
+//import net.gmx.nosefish.fishysigns.Log;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 
 public class FishySignFinderTask extends FishyTask{
-	private final Set<FishyChunk> chunks;
+	private final Collection<FishyChunk> chunks;
 	
-	public FishySignFinderTask(Set<FishyChunk> chunks) {
+	public FishySignFinderTask(Collection<FishyChunk> chunks) {
 		this.chunks = chunks;
 	}
-
 
 	@Override
 	public void doStuff() {
@@ -34,7 +33,7 @@ public class FishySignFinderTask extends FishyTask{
 					}
 				}
 			} else {
-				Log.get().logWarning(this.getClass().getName() + " - Chunk not loaded: " + fishyChunk);
+				//Log.get().logWarning(this.getClass().getName() + " - Chunk not loaded: " + fishyChunk);
 			}
 		}
 		if (! signsToLoad.isEmpty()) {

@@ -23,7 +23,7 @@ public final class Unsafe {
 	 * @param blockLoc
 	 * @return the block at the location (most of the time), or null if something goes wrong
 	 */
-	public static Block unsafeGetBlockAt(FishyLocationInt blockLoc) {
+	public static ImmutableBlockState unsafeGetBlockAt(FishyLocationInt blockLoc) {
 		Block block = null;
 		WorldValuePublisher.publish();
 		try {
@@ -36,8 +36,7 @@ public final class Unsafe {
 		} catch (Exception e) {
 			// hmmmmm... *looks left and right* ... has anyone seen that?
 		}
-		// TODO: return ImmutableBlockState instead?
-		return block;
+		return new ImmutableBlockState(block);
 	}
 	
 	

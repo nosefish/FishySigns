@@ -2,11 +2,11 @@ package net.gmx.nosefish.fishysigns.signs.plumbing;
 
 import java.util.ArrayList;
 
-import net.canarymod.api.world.blocks.Block;
 import net.canarymod.api.world.blocks.BlockType;
 import net.gmx.nosefish.fishylib.blocks.BlockInfo;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.gmx.nosefish.fishysigns.task.common.OutputLever;
+import net.gmx.nosefish.fishysigns.world.ImmutableBlockState;
 import net.gmx.nosefish.fishysigns.world.Unsafe;
 
 public class FishyLeverOutputBox {
@@ -73,7 +73,7 @@ public class FishyLeverOutputBox {
 		synchronized(lock) {
 			for (int pin = 0; pin < getPinCount(); ++pin) {
 				FishyLocationInt location = physOutput.get(pin);
-				Block block = Unsafe.unsafeGetBlockAt(location);
+				ImmutableBlockState block = Unsafe.unsafeGetBlockAt(location);
 				physSignal[pin] = false;
 				if (block == null) {
 					continue;

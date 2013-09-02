@@ -53,12 +53,11 @@ public class ServerOddTickWatcher implements IFishyWatcher{
 			return;
 		}
 		int tick = Canary.getServer().getCurrentTick();
-		if (tick % 2 == 0) {
+		if ((tick & 1) == 0) {
 			return;
 		}
 		ActivationTask activate = new ActivationTask(tick);
 		activate.submit();
-
 	}
 	
 	/**
