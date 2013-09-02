@@ -11,8 +11,12 @@ import java.util.concurrent.ConcurrentMap;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.canarymod.api.world.World;
 import net.canarymod.api.world.blocks.Block;
+import net.canarymod.hook.HookHandler;
+import net.canarymod.hook.system.ServerTickHook;
+import net.canarymod.plugin.Priority;
 import net.gmx.nosefish.fishysigns.activator.ActivatorBlocks;
 import net.gmx.nosefish.fishysigns.activator.ImmutableBlockStateChange;
+import net.gmx.nosefish.fishysigns.plugin.FishySigns;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 import net.gmx.nosefish.fishysigns.world.ImmutableBlockState;
@@ -34,7 +38,10 @@ import net.gmx.nosefish.fishysigns.world.ImmutableBlockState;
  *
  */
 public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
-	private static PollingBlockChangeWatcher instance = new PollingBlockChangeWatcher();
+	private static PollingBlockChangeWatcher instance = new PollingBlockChangeWatcher();	
+	static{
+		FishySigns.addWatcher(instance);
+	}
 
 	// the blocks we're watching, and the state they had the last time we looked
 	private final ConcurrentMap<FishyLocationInt, ImmutableBlockState> worldBlockStates;
@@ -47,6 +54,15 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 		this.worldBlockStates = new ConcurrentHashMap<FishyLocationInt, ImmutableBlockState>(64, 0.9F, 2);
 	}
 
+
+	/**
+	 * Gets the singleton instance
+	 * 
+	 * @return the instance
+	 */
+	public static PollingBlockChangeWatcher getInstance() {
+		return instance;
+	}
 
 
 	/**
@@ -74,25 +90,6 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 	}
 
 	/**
-	 * Gets the singleton instance
-	 * 
-	 * @return the instance
-	 */
-	public static PollingBlockChangeWatcher getInstance() {
-		return instance;
-	}
-
-
-	/**
-	 * Starts the watcher. Called by the Plugin.
-	 * Do not call from anywhere else.
-	 */
-	public void start() {
-		BlockChangeWatcherTask watcherTask = new BlockChangeWatcherTask();
-		watcherTask.submit();
-	}
-	
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -104,67 +101,62 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 			}
 		}
 	}
-
 	
-	// ----- FishyTasks -----
-	
-	private class BlockChangeWatcherTask extends FishyTask {
-//		private long count = 0;
-
-		public BlockChangeWatcherTask() {
-			super();
-			this.setTickDelay(0);
-			this.setTickRepeatDelay(1);
+	@HookHandler(priority=Priority.PASSIVE)
+	public void onTick(ServerTickHook hook) {
+		if (! enabled) {
+			return;
 		}
-		
-		@Override
-		public void doStuff() {
-			if(worldBlockStates.isEmpty()) {
-				return;
-			}
-//			++count;
-//			long starttime = 0;
-//			long endtime = 0;
-//			final int displaystep = 50;
-//			if (count % displaystep == 0) {
-//				starttime = System.currentTimeMillis();
-//				System.out.println("Run number " + count + " checking " + worldBlockStates.size() + " blocks.");
-//			}
-			List<ImmutableBlockStateChange> changes = new LinkedList<ImmutableBlockStateChange>();
-			for (FishyLocationInt location : worldBlockStates.keySet()) {
-				World world = location.getWorld().getWorldIfLoaded();
-				if (world == null) continue;
-				if (! world.isChunkLoaded(location.getIntX(), location.getIntY(), location.getIntZ())) {
-					continue;
-				}
-				// world and chunk are loaded, let's check out this block
-				Block block = world.getBlockAt(location.getIntX(), location.getIntY(), location.getIntZ());
-				ImmutableBlockState oldState = worldBlockStates.get(location);
-				if (oldState != null && ! oldState.equalsBlock(block)) {
-					// If we're unlucky, the entry has been removed since we retrieved the value.
-					// In that case, there's no point to process it further - nobody cares about
-					// the block anymore.
-					ImmutableBlockState newState = new ImmutableBlockState(block);
-					// update the block state in the map
-					ImmutableBlockState stillRelevant = worldBlockStates.replace(location, newState);
-					if (stillRelevant != null) {
-						// if it hasn't been removed, remember this as changed for later processing
-						changes.add(new ImmutableBlockStateChange(location, oldState, newState));
-					}
-				}
-			}
-			if (changes.isEmpty()) {
-				this.setNextTask(null);
-			} else {
-				this.setNextTask(new ActivationTask(changes));
-			}
-//			if (count % displaystep == 0) {
-//				endtime = System.currentTimeMillis();
-//				System.out.println("Run number " + count + " took: " + (endtime - starttime) + "ms.");
-//			}
+		List<ImmutableBlockStateChange> changes = pollBlockStates();
+		if (! changes.isEmpty()) {
+			ActivationTask activate = new ActivationTask(changes);
+			activate.submit();
 		}
 	}
 
+
+	private List<ImmutableBlockStateChange> pollBlockStates() {
+		List<ImmutableBlockStateChange> changes = new LinkedList<ImmutableBlockStateChange>();
+		if(worldBlockStates.isEmpty()) {
+			return changes;
+		}
+		for (FishyLocationInt location : worldBlockStates.keySet()) {
+			World world = location.getWorld().getWorldIfLoaded();
+			if (world == null) continue;
+			if (! world.isChunkLoaded(location.getIntX(), location.getIntY(), location.getIntZ())) {
+				continue;
+			}
+			// world and chunk are loaded, let's check out this block
+			Block block = world.getBlockAt(location.getIntX(), location.getIntY(), location.getIntZ());
+			ImmutableBlockState oldState = worldBlockStates.get(location);
+			if (oldState != null && ! oldState.equalsBlock(block)) {
+				// If we're unlucky, the entry has been removed since we retrieved the value.
+				// In that case, there's no point to process it further - nobody cares about
+				// the block anymore.
+				ImmutableBlockState newState = new ImmutableBlockState(block);
+				// update the block state in the map
+				ImmutableBlockState stillRelevant = worldBlockStates.replace(location, newState);
+				if (stillRelevant != null) {
+					// if it hasn't been removed, remember this as changed for later processing
+					changes.add(new ImmutableBlockStateChange(location, oldState, newState));
+				}
+			}
+		}
+		return changes;
+	}
+
+
+	@Override
+	public void disable() {
+		super.disable();
+		worldBlockStates.clear();
+	}
+
+	/**
+	 * Activates the registered IDs outside the server thread
+	 * @author Stefan Steinheimer (nosefish)
+	 *
+	 */
 	private class ActivationTask extends FishyTask {
 		private final List<ImmutableBlockStateChange> changes;
 

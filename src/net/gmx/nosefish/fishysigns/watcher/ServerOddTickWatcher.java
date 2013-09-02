@@ -78,9 +78,8 @@ public class ServerOddTickWatcher implements IFishyWatcher{
 		public void doStuff() {
 			Activator activator = new ActivatorServerTick(tick);
 			Map<Long, Activator> activationMap = new TreeMap<Long, Activator>();
-			// let's get this over with quickly in order to
-			// not block registration (which happens in the main thread)
-			// longer than necessary
+			// let's get this over with quickly in order to not block registration
+			// (which happens in the main thread) longer than necessary
 			synchronized(registeredIds) {
 				for (Long id : registeredIds) {
 					activationMap.put(id, activator);
