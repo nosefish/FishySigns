@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentMap;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.canarymod.api.world.World;
 import net.canarymod.api.world.blocks.Block;
-import net.gmx.nosefish.fishysigns.activator.Activatable;
 import net.gmx.nosefish.fishysigns.activator.ActivatorBlocks;
 import net.gmx.nosefish.fishysigns.activator.ImmutableBlockStateChange;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
@@ -63,9 +62,9 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 	 * @param location
 	 */
 	@Override
-	public void register(Activatable activatable, FishyLocationInt location) {
+	public void register(Long activatableID, FishyLocationInt location) {
 		synchronized(this) {
-			super.register(activatable, location);
+			super.register(activatableID, location);
 			// Put an invalid block state into the map
 			// to make it send the current block state
 			// to the Activatable on the next check pass.
@@ -97,10 +96,9 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void remove(Activatable activatable) {
-		long id = activatable.getID();
+	public void remove(Long activatableID) {
 		synchronized(this) {
-			List <FishyLocationInt> removedKeys = blockLocationIndex.removeValue(id);	
+			List <FishyLocationInt> removedKeys = blockLocationIndex.removeValue(activatableID);	
 			for (FishyLocationInt loc : removedKeys) {
 				worldBlockStates.remove(loc);
 			}

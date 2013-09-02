@@ -13,6 +13,8 @@ public abstract class FishyMechanismSign extends RedstoneTriggeredFishySign {
 		super(sign);
 	}
 
+	protected abstract void onPlayerRightClick(String playerName);
+	
 	@Override
 	public void activate(Activator activator) {
 		if (activator instanceof ActivatorPlayerRightClick) {
@@ -25,8 +27,12 @@ public abstract class FishyMechanismSign extends RedstoneTriggeredFishySign {
 
 	@Override
 	public void initialize() {
-		PlayerRightClickWatcher.getInstance().register(this, this.getLocation());
+		PlayerRightClickWatcher.getInstance().register(this.getID(), this.getLocation());
 	}
 	
-	protected abstract void onPlayerRightClick(String playerName);	
+	@Override
+	public void remove() {
+		PlayerRightClickWatcher.getInstance().remove(this.getID());
+	}
+
 }

@@ -15,7 +15,7 @@ public abstract class FishyRightClickSign extends FishySign {
 	
 	@Override
 	public void initialize() {
-		PlayerRightClickWatcher.getInstance().register(this, this.getLocation());
+		PlayerRightClickWatcher.getInstance().register(this.getID(), this.getLocation());
 	}
 
 	@Override
@@ -29,6 +29,6 @@ public abstract class FishyRightClickSign extends FishySign {
 
 	@Override
 	public void remove() {
-		PlayerRightClickWatcher.getInstance().remove(this);
+		PlayerRightClickWatcher.getInstance().remove(this.getID());
 	}
 }

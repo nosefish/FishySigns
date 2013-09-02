@@ -8,38 +8,54 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.canarymod.api.world.blocks.Block;
+import net.canarymod.hook.HookHandler;
+import net.canarymod.hook.world.RedstoneChangeHook;
+import net.canarymod.plugin.Priority;
 import net.gmx.nosefish.fishysigns.activator.ActivatorRedstone;
 import net.gmx.nosefish.fishysigns.activator.ImmutableRedstoneChange;
+import net.gmx.nosefish.fishysigns.plugin.FishySigns;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 
 public class RedstoneChangeWatcher extends BlockLocationWatcher{
 	private static RedstoneChangeWatcher instance = new RedstoneChangeWatcher();
-
+	static {
+		FishySigns.addWatcher(instance);
+	}
+	
 	private RedstoneChangeCollector rsChangeCollector = null;
 	
 	private RedstoneChangeWatcher() {
 		
 	}
 	
-	/**
-	 * Called by FishyEventListener. Do not call yourself.
-	 * @param block
-	 * @param oldLevel
-	 * @param newLevel
-	 */
-	public void redstoneChanged(Block block, int oldLevel, int newLevel) {
-//		FishyLocationInt tmpLoc = new FishyLocationInt(block.getLocation());
-//		System.out.println("RS change: " + block.getType().getMachineName() + " " + oldLevel + " -> " + newLevel);
-//		System.out.println("changed   : " + tmpLoc + " - " + tmpLoc.hashCode());
-//		for (FishyLocationInt l : this.blockLocationIndex.keySet()) {
-//			System.out.println("registered: "+ l + " - " + l.hashCode());
-//		}
-		if (this.rsChangeCollector != null // started
-				&& (oldLevel == 0) != (newLevel == 0) // high/low change, boolean != is XOR
-				&& this.blockLocationIndex.containsKey(new FishyLocationInt(block.getLocation()))) {
-//			System.out.println("RS change added to collector");
+	@Override
+	public void enable() {
+		super.enable();
+		if (this.rsChangeCollector != null) {
+			this.rsChangeCollector.cancel();
+		}
+		this.rsChangeCollector = new RedstoneChangeCollector();
+		this.rsChangeCollector.submit();
+	}
+	
+	public void disable() {
+		super.disable();
+		this.rsChangeCollector.cancel();
+		this.rsChangeCollector = null;
+	}
+	
+	@HookHandler(priority=Priority.PASSIVE)
+	public void redstoneChanged(RedstoneChangeHook hook) {
+		if (! enabled) {
+			return;
+		}
+		Block block = hook.getSourceBlock();
+		int oldLevel = hook.getOldLevel();
+		int newLevel = hook.getNewLevel();
+		if ((oldLevel == 0) != (newLevel == 0) // high/low change, boolean != is XOR
+			&& this.blockLocationIndex.containsKey(new FishyLocationInt(block.getLocation()))) {
 			this.rsChangeCollector.add(new ImmutableRedstoneChange(block, oldLevel, newLevel));
 		}
 	}
@@ -48,17 +64,6 @@ public class RedstoneChangeWatcher extends BlockLocationWatcher{
 		return instance;
 	}
 	
-	/**
-	 * Starts the watcher. Called by the Plugin.
-	 * Do not call from anywhere else.
-	 */
-	public void start() {
-		if (this.rsChangeCollector != null) {
-			this.rsChangeCollector.cancel();
-		}
-		this.rsChangeCollector = new RedstoneChangeCollector();
-		this.rsChangeCollector.submit();
-	}
 	
 	/**
 	 * Collects all redstone changes that arrive during one tick.

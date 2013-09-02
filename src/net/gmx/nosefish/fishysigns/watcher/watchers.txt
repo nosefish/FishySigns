@@ -1,5 +1,10 @@
-- Watchers are singletons with a static initializer.
-They must be accessed by their static getInstance method.
+- Watchers are PluginListener singletons with a static initializer.
+  In that static initializer, they must add themselves to the plugin.
+  Outside the plugin class, they must be accessed by their static getInstance method.
 
 - Watchers must not retain references to Activatables.
-All access to Activatables must be done via their id through the ActivationManager.
+  All access to Activatables must be done via their id through the ActivationManager.
+
+- Watchers should create FishyTasks that run outside the server thread for the activation.
+  FishySigns will likely perform tasks on the activation call, so it may take a considerable
+  amount of time for it to return. Make sure not to block registration by locks for too long!

@@ -29,7 +29,7 @@ public abstract class FishyICSign extends RedstoneTriggeredFishySign {
 		initializeOutputBox();
 		FishyLocationInt[] outputLocations = outputBox.getOutputLocations();
 		for (FishyLocationInt loc : outputLocations) {
-			PlayerRightClickWatcher.getInstance().register(this, loc);
+			PlayerRightClickWatcher.getInstance().register(this.getID(), loc);
 		}
 	}
 	
@@ -108,7 +108,7 @@ public abstract class FishyICSign extends RedstoneTriggeredFishySign {
 	@Override
 	public void remove() {
 		super.remove();
-		PlayerRightClickWatcher.getInstance().remove(this);
+		PlayerRightClickWatcher.getInstance().remove(this.getID());
 	}
 	
 	@Override

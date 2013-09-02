@@ -42,11 +42,6 @@ public abstract class RedstoneTriggeredFishySign extends FishySign {
 		}
 	}
 
-	@Override
-	public void remove() {
-		RedstoneChangeWatcher.getInstance().remove(this);
-	}
-
 	/**
 	 * Called in <code>initialize</code>. Override to your liking.
 	 * Default wires all blocks next to the sign to a single input pin.
@@ -85,10 +80,15 @@ public abstract class RedstoneTriggeredFishySign extends FishySign {
 	
 	protected void registerInputsWithWatcher() {
 		for (FishyLocationInt blockLoc : inputBox.getInputLocations()) {
-			RedstoneChangeWatcher.getInstance().register(this, blockLoc);
+			RedstoneChangeWatcher.getInstance().register(this.getID(), blockLoc);
 		}
 	}
 	
+	@Override
+	public void remove() {
+		RedstoneChangeWatcher.getInstance().remove(this.getID());
+	}
+
 	/**
 	 * Do not call this constructor directly.
 	 * Use <code>FishySign.loadAndRegister</code> or <code>FishySign.createAndRegister</code> to instantiate new FishySigns.

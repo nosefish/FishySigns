@@ -3,8 +3,12 @@ package net.gmx.nosefish.fishysigns.watcher;
 import java.util.Set;
 
 import net.canarymod.api.world.blocks.Block;
+import net.canarymod.hook.HookHandler;
+import net.canarymod.hook.player.BlockRightClickHook;
+import net.canarymod.plugin.Priority;
 import net.gmx.nosefish.fishysigns.activator.Activator;
 import net.gmx.nosefish.fishysigns.activator.ActivatorPlayerRightClick;
+import net.gmx.nosefish.fishysigns.plugin.FishySigns;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 import net.gmx.nosefish.fishysigns.world.ImmutableLocationBlockState;
@@ -13,19 +17,21 @@ import net.gmx.nosefish.fishysigns.world.ImmutableLocationBlockState;
 public class PlayerRightClickWatcher extends BlockLocationWatcher{
 	private static final PlayerRightClickWatcher instance = new PlayerRightClickWatcher();
 	
+	static{
+		FishySigns.addWatcher(instance);
+	}
 
 	private PlayerRightClickWatcher() {
 		// nothing to do
 	}
 	
-	/**
-	 * Called by the <code>FishyEventListener</code>.
-	 * Do not call from anywhere else.
-	 * 
-	 * @param block
-	 * @param playerName
-	 */
-	public void onRightClick(Block block, String playerName){
+	@HookHandler(priority=Priority.PASSIVE)
+	public void onRightClick(BlockRightClickHook hook){
+		if (! enabled) {
+			return;
+		}
+		Block block = hook.getBlockClicked();
+		String playerName = hook.getPlayer().getName();
 		FishyTask activate = new ActivationTask(new ImmutableLocationBlockState(block), playerName);
 		activate.submit();
 	}
@@ -33,6 +39,7 @@ public class PlayerRightClickWatcher extends BlockLocationWatcher{
 	public static PlayerRightClickWatcher getInstance() {
 		return instance;
 	}
+	
 	
 	private class ActivationTask extends FishyTask{
 		private final ImmutableLocationBlockState blockState;
@@ -57,4 +64,6 @@ public class PlayerRightClickWatcher extends BlockLocationWatcher{
 			}
 		}
 	}// end of internal class
+
+
 }
