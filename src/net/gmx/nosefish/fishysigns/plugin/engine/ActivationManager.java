@@ -143,6 +143,20 @@ public final class ActivationManager {
 	
 	/**
 	 * Activates all registered <code>Activatables</code> represented by the ids in the list
+	 * with the same <code>Activator</code>.
+	 * 
+	 * @param activator the <code>Activator</code> to send to the <code>Activatables</code>
+	 * @param toActivate ids to activate
+	 */
+	public void activateAll(Activator activator, Long... toActivate) {
+		for (Long id : toActivate) {
+			activate(id, activator);
+		}
+	}
+	
+	
+	/**
+	 * Activates all registered <code>Activatables</code> represented by the ids in the list
 	 * with the associated <code>Activator</code>.
 	 * 
 	 * @param toActivate id/<code>Activator</code> pairs to process
