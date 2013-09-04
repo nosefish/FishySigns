@@ -3,7 +3,13 @@ package net.gmx.nosefish.fishysigns.activator;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 
 
-
+/**
+ * Instances can register themselves with the <code>ActivationManager</code>
+ * be "acitvated" by certain events.
+ * 
+ * @author Stefan Steinheimer (nosefish)
+ *
+ */
 public interface Activatable {
 	/**
 	 *  

@@ -1,5 +1,7 @@
 package net.gmx.nosefish.fishysigns.activator;
 
+//TODO: the generic type argument gets removed by the ActivationManager,
+// resulting in an uncheckd cast for the Activatable. That is just wrong.
 public class ActivatorRadio<T> implements Activator {
 	private final String bandName;
 	private final T signal;
@@ -16,7 +18,4 @@ public class ActivatorRadio<T> implements Activator {
 	public T getSignal() {
 		return signal;
 	}
-	
-
-
 }
