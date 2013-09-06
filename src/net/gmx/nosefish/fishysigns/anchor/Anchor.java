@@ -13,11 +13,20 @@ import java.util.List;
  * @author Stefan Steinheimer
  *
  */
-public abstract class Anchor implements IAnchor {
+public class Anchor implements IAnchor {
+
+	private Object lock = new Object();
 	private List<IAnchorable> anchoredObjects = new ArrayList<IAnchorable>(4);
+	private boolean raised = false;
 	
-	public final synchronized void anchor(IAnchorable toAnchor) {
-		anchoredObjects.add(toAnchor);
+	public final void anchor(IAnchorable toAnchor) {
+		synchronized(lock) {
+			if (raised) {
+				toAnchor.anchorRaised(this);
+			} else {
+				anchoredObjects.add(toAnchor);
+			}
+		}
 	}
 	
 	/**
@@ -26,10 +35,13 @@ public abstract class Anchor implements IAnchor {
 	 * 
 	 * To be called by subclasses.
 	 */
-	protected final synchronized void raiseAnchor() {
-		for (IAnchorable anchoredObject : anchoredObjects) {
-			anchoredObject.anchorRaised(this);
+	public final synchronized void raiseAnchor() {
+		synchronized (lock) {
+			raised = true;
+			for (IAnchorable anchoredObject : anchoredObjects) {
+				anchoredObject.anchorRaised(this);
+			}
+			this.anchoredObjects = null;
 		}
-		this.anchoredObjects = null;
 	}
 }

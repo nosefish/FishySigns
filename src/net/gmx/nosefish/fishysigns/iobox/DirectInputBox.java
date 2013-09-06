@@ -68,7 +68,7 @@ public class DirectInputBox extends AnchoredActivatableBox {
             int signPinCount,
             IDirectInputHandler handler) {
 		DirectInputBox box = new DirectInputBox(inputBoxLocation, physicalPinCount, signPinCount, handler);
-		box.registerWithActivationManager();
+		registerWithActivationManagerAndAnchor(box, handler);
 		handler.anchor(box);
 		return box;
 	}
@@ -138,7 +138,6 @@ public class DirectInputBox extends AnchoredActivatableBox {
 	
 	
 	public void finishInit() {
-		this.registerWithActivationManager();
 		synchronized(lock) {
 			updateInputFromWorld();
 			refreshSignSignal();

@@ -23,8 +23,7 @@ public class RadioAntennaInputBox<T> extends AnchoredActivatableBox {
 			IRadioInputHandler<T> handler,
 			Class<T> signalType) {
 		RadioAntennaInputBox<T> box = new RadioAntennaInputBox<T>(tower, bandName, handler, signalType);
-		handler.anchor(box);
-		box.registerWithActivationManager();
+		registerWithActivationManagerAndAnchor(box, handler);
 		return box;
 	}
 	

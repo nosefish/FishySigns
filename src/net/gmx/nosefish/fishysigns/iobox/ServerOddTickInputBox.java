@@ -19,8 +19,7 @@ public class ServerOddTickInputBox extends AnchoredActivatableBox {
 
 	public static ServerOddTickInputBox createAndRegister(IServerOddTickHandler handler) {
 		ServerOddTickInputBox box = new ServerOddTickInputBox(handler);
-		box.registerWithActivationManager();
-		handler.anchor(box);
+		registerWithActivationManagerAndAnchor(box, handler);
 		return box;
 	}
 	

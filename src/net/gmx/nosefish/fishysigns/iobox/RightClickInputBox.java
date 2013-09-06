@@ -20,8 +20,7 @@ public class RightClickInputBox extends AnchoredActivatableBox {
 	public static RightClickInputBox createAndRegister(FishyLocationInt location,
 	                                            IRightClickInputHandler handler) {
 		RightClickInputBox box = new RightClickInputBox(location, handler);
-		box.registerWithActivationManager();
-		handler.anchor(box);
+		registerWithActivationManagerAndAnchor(box, handler);
 		return box;
 	}
 	
