@@ -1,14 +1,18 @@
 package net.gmx.nosefish.fishysigns.signs;
 
+import java.lang.ref.WeakReference;
+
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.gmx.nosefish.fishylib.worldmath.FishyVectorInt;
+import net.gmx.nosefish.fishysigns.Log;
+import net.gmx.nosefish.fishysigns.anchor.IAnchor;
+import net.gmx.nosefish.fishysigns.anchor.IAnchorable;
 import net.gmx.nosefish.fishysigns.iobox.FishySignSignal;
-import net.gmx.nosefish.fishysigns.iobox.LeverOutputBox;
-import net.gmx.nosefish.fishysigns.iobox.RightClickInputBox;
-import net.gmx.nosefish.fishysigns.iobox.RightClickInputBox.IRightClickInputHandler;
+import net.gmx.nosefish.fishysigns.iobox.LeverIOBox;
+import net.gmx.nosefish.fishysigns.iobox.LeverIOBox.ILeverIOHandler;
 import net.gmx.nosefish.fishysigns.plugin.engine.UnloadedSign;
 import net.gmx.nosefish.fishysigns.task.common.MessagePlayerTask;
-import net.gmx.nosefish.fishysigns.world.FishyLocationBlockState;
+
 
 /**
  * A RedstoneTriggeredFishySign with output support. Must be a WallSign.
@@ -19,17 +23,15 @@ import net.gmx.nosefish.fishysigns.world.FishyLocationBlockState;
  *
  */
 public abstract class FishyICSign
-              extends RedstoneTriggeredFishySign
-           implements IRightClickInputHandler{
+              extends RedstoneTriggeredFishySign {
 	
-	protected LeverOutputBox outputBox;
+	protected LeverIOBox outputBox;
 	
 
 	@Override
 	public void initialize() {
 		initializeRSInputBox();
 		initializeOutputBox();
-		initializeOutputLeverClickProtection();
 	}
 	
 	/**
@@ -37,20 +39,9 @@ public abstract class FishyICSign
 	 * If you need more than 1 pin, override
 	 */
 	protected void initializeOutputBox() {
-		outputBox = new LeverOutputBox(1);
+		outputBox = LeverIOBox.createAndRegister(1, new LeverClickBlocker(this));
 		outputBox.setOutputLocation(0, this.getCentreOutput(1));
 		outputBox.finishInit();
-	}
-	
-	/**
-	 * Sets up RighClickInputBoxes for the output levers.
-	 */
-	// TODO: this should be in LeverOutputBox - would make it a LeverIOBox :)
-	protected void initializeOutputLeverClickProtection() {
-		FishyLocationInt[] outputLocations = outputBox.getOutputLocations();
-		for (FishyLocationInt loc : outputLocations) {
-			RightClickInputBox.createAndRegister(loc, this);
-		}
 	}
 	
 	/**
@@ -106,17 +97,6 @@ public abstract class FishyICSign
 	}
 	
 	@Override
-	public void handleRightClick(String playerName, FishyLocationBlockState block) {
-		FishyLocationInt clickLocation = block.getLocation();
-		int pin = outputBox.getPin(clickLocation);
-		if (pin != -1) {
-			outputBox.refreshOutput();
-			MessagePlayerTask sendMsg = new MessagePlayerTask(playerName, "Why is this still in FishyICSign?");
-			sendMsg.submit();
-		}
-	}
-
-	@Override
 	public boolean validateOnLoad() {
 		return this.isWallSign();
 	}
@@ -130,4 +110,43 @@ public abstract class FishyICSign
 		super(sign);
 	}
 
+	/**
+	 * Anchors the LeverIOBox to the IAnchor passed in the constructor
+	 * and blocks all clicks, sending a message to the offending player.
+	 * 
+	 * @author Stefan Steinheimer (nosefish)
+	 *
+	 */
+	protected static class LeverClickBlocker implements ILeverIOHandler {
+		private WeakReference<IAnchor> anchor;
+		private static final String message = "Please do not click IC outputs!";
+		
+		public LeverClickBlocker(IAnchor anchor) {
+			this.anchor = new WeakReference<IAnchor>(anchor);
+		}
+		
+		@Override
+		public void anchor(IAnchorable toAnchor) {
+			anchor.get().anchor(toAnchor);
+		}
+
+		@Override
+		public boolean handleIOLeverRightClick(
+				String playerName, FishySignSignal currentSignal, int pinClicked) {
+			
+			MessagePlayerTask sendMsg = new MessagePlayerTask(playerName, message);
+			sendMsg.submit();
+			// always deny
+			return false;
+		}
+
+		@Override
+		public void handleIOLeverStateChanged(FishySignSignal oldSignal,
+				FishySignSignal newSignal) {
+			// we always deny, this shouldn't be called at all
+			Log.get().logWarning("FishyICSign.LeverClickBlocker: " +
+					"handleIOLeverStateChanged was called unexpectedly.");
+		}
+		
+	}
 }
