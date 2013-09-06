@@ -29,7 +29,7 @@ public class ServerTicker implements PluginListener {
 	 */
 	public void awaitTick() throws DisabledException{
 		if (shutdown) {
-			throw new DisabledException("FishyLib has been disabled, the ServerTicker was shut down.");
+			throw new DisabledException("FishySigns has been disabled, the ServerTicker was shut down.");
 		}
 		long lastTick = tickCount;
 		try {

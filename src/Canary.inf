@@ -2,5 +2,5 @@ name = FishySigns
 main-class = net.gmx.nosefish.fishysigns.plugin.FishySigns
 isLibrary = false
 author = nosefish
-version = 0.0.8
+version = 0.0.9
 dependencies = FishyLib

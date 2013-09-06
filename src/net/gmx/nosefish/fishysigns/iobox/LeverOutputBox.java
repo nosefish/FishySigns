@@ -1,4 +1,4 @@
-package net.gmx.nosefish.fishysigns.signs.plumbing;
+package net.gmx.nosefish.fishysigns.iobox;
 
 import java.util.ArrayList;
 
@@ -6,17 +6,17 @@ import net.canarymod.api.world.blocks.BlockType;
 import net.gmx.nosefish.fishylib.blocks.BlockInfo;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.gmx.nosefish.fishysigns.task.common.OutputLever;
-import net.gmx.nosefish.fishysigns.world.ImmutableBlockState;
+import net.gmx.nosefish.fishysigns.world.FishyBlockState;
 import net.gmx.nosefish.fishysigns.world.Unsafe;
 
-public class FishyLeverOutputBox {
+public class LeverOutputBox {
 	
 	protected Object lock = new Object();
 	protected final ArrayList<FishyLocationInt> physOutput;
 	protected final boolean[] physSignal;
 	
 	
-	public FishyLeverOutputBox(int pinCount) {
+	public LeverOutputBox(int pinCount) {
 		this.physOutput = new ArrayList<FishyLocationInt>(pinCount);
 		this.physSignal = new boolean[pinCount];
 	}
@@ -73,7 +73,7 @@ public class FishyLeverOutputBox {
 		synchronized(lock) {
 			for (int pin = 0; pin < getPinCount(); ++pin) {
 				FishyLocationInt location = physOutput.get(pin);
-				ImmutableBlockState block = Unsafe.unsafeGetBlockAt(location);
+				FishyBlockState block = Unsafe.unsafeGetBlockAt(location);
 				physSignal[pin] = false;
 				if (block == null) {
 					continue;

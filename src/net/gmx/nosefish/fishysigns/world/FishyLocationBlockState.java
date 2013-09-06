@@ -3,18 +3,18 @@ package net.gmx.nosefish.fishysigns.world;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.canarymod.api.world.blocks.Block;
 
-public final class ImmutableLocationBlockState {
+public final class FishyLocationBlockState {
 	private final FishyLocationInt location;
-	private final ImmutableBlockState state;
+	private final FishyBlockState state;
 
-	public ImmutableLocationBlockState(Block block) {
+	public FishyLocationBlockState(Block block) {
 		this.location = new FishyLocationInt(block.getLocation());
-		this.state = new ImmutableBlockState(block);
+		this.state = new FishyBlockState(block);
 	}
 	
-	public ImmutableLocationBlockState(FishyLocationInt location, short typeId, short data) {
+	public FishyLocationBlockState(FishyLocationInt location, short typeId, short data) {
 		this.location = location;
-		this.state = new ImmutableBlockState(typeId, data);
+		this.state = new FishyBlockState(typeId, data);
 	}
 	
 	/**
@@ -26,7 +26,7 @@ public final class ImmutableLocationBlockState {
 	}
 	
 	
-	public ImmutableBlockState getState() {
+	public FishyBlockState getState() {
 		return state;
 	}
 	
@@ -46,8 +46,8 @@ public final class ImmutableLocationBlockState {
 	
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof ImmutableLocationBlockState) {
-			ImmutableLocationBlockState otherState = (ImmutableLocationBlockState) other;
+		if (other instanceof FishyLocationBlockState) {
+			FishyLocationBlockState otherState = (FishyLocationBlockState) other;
 			return this.location.equals(otherState.location)
 					&& this.state.equals(otherState.state);
 		}

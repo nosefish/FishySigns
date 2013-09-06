@@ -2,53 +2,29 @@ package net.gmx.nosefish.fishysigns.signs;
 
 import net.gmx.nosefish.fishylib.worldmath.FishyDirection;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
-import net.gmx.nosefish.fishysigns.activator.Activator;
-import net.gmx.nosefish.fishysigns.activator.ActivatorRedstone;
+import net.gmx.nosefish.fishysigns.iobox.DirectInputBox;
+import net.gmx.nosefish.fishysigns.iobox.DirectInputBox.IDirectInputHandler;
 import net.gmx.nosefish.fishysigns.plugin.engine.UnloadedSign;
-import net.gmx.nosefish.fishysigns.signs.plumbing.FishyDirectInputBox;
-import net.gmx.nosefish.fishysigns.signs.plumbing.FishySignSignal;
-import net.gmx.nosefish.fishysigns.watcher.RedstoneChangeWatcher;
 
 
-public abstract class RedstoneTriggeredFishySign extends FishySign {
-	protected FishyDirectInputBox inputBox;
-
-	protected abstract void onRedstoneInputChange(FishySignSignal oldInput, FishySignSignal newInput);
+public abstract class RedstoneTriggeredFishySign
+              extends FishySign
+           implements IDirectInputHandler {
 	
+	protected DirectInputBox inputBox;
+
 	@Override
 	public void initialize() {
-		this.initializeInputBox();
-		this.registerInputsWithWatcher();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * When overriding this to allow other activation types,
-	 * call <code>super(activator)</code> at least
-	 * for instances of <code>ActivatorRedstone</code>.
-	 */
-	@Override
-	public void activate(Activator activator) {
-		if (! (activator instanceof ActivatorRedstone)) {
-			return;
-		}
-		ActivatorRedstone rsActivator = (ActivatorRedstone) activator;
-		FishySignSignal oldInput = inputBox.getSignal();
-		inputBox.updateInput(rsActivator.getChanges());
-		FishySignSignal newInput = inputBox.getSignal();
-		if (! oldInput.equals(newInput)) {
-			this.onRedstoneInputChange(oldInput, newInput);
-		}
+		this.initializeRSInputBox();
 	}
 
 	/**
 	 * Called in <code>initialize</code>. Override to your liking.
 	 * Default wires all blocks next to the sign to a single input pin.
 	 */
-	protected void initializeInputBox() {
+	protected void initializeRSInputBox() {
 		FishyLocationInt[] inputLocations = this.getInputLocations();
-		inputBox = new FishyDirectInputBox(this.location, inputLocations.length, 1);
+		inputBox = DirectInputBox.createAndRegister(this.location, inputLocations.length, 1, this);
 		inputBox.setAllInputPins(inputLocations);
 		inputBox.wireAllToPin0();
 		inputBox.finishInit();
@@ -76,18 +52,7 @@ public abstract class RedstoneTriggeredFishySign extends FishySign {
 		}
 		return result;
 	}
-	
-	
-	protected void registerInputsWithWatcher() {
-		for (FishyLocationInt blockLoc : inputBox.getInputLocations()) {
-			RedstoneChangeWatcher.getInstance().register(this.getID(), blockLoc);
-		}
-	}
-	
-	@Override
-	public void remove() {
-		RedstoneChangeWatcher.getInstance().remove(this.getID());
-	}
+
 
 	/**
 	 * Do not call this constructor directly.

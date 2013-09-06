@@ -1,17 +1,17 @@
-package net.gmx.nosefish.fishysigns.activator;
+package net.gmx.nosefish.fishysigns.watcher.activator;
 
 import net.canarymod.api.world.blocks.Block;
-import net.gmx.nosefish.fishysigns.world.ImmutableBlockState;
-import net.gmx.nosefish.fishysigns.world.ImmutableLocationBlockState;
+import net.gmx.nosefish.fishysigns.world.FishyBlockState;
+import net.gmx.nosefish.fishysigns.world.FishyLocationBlockState;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 
-public class ImmutableRedstoneChange {
-	ImmutableLocationBlockState blockState;
+public class FishyRedstoneChange {
+	FishyLocationBlockState blockState;
 	int oldLevel;
 	int newLevel;
 	
-	public ImmutableRedstoneChange(Block block, int oldLevel, int newLevel) {
-		this.blockState = new ImmutableLocationBlockState(block);
+	public FishyRedstoneChange(Block block, int oldLevel, int newLevel) {
+		this.blockState = new FishyLocationBlockState(block);
 		this.oldLevel = oldLevel;
 		this.newLevel = newLevel;
 	}
@@ -20,7 +20,7 @@ public class ImmutableRedstoneChange {
 		return blockState.getLocation();
 	}
 	
-	public ImmutableBlockState getBlockState() {
+	public FishyBlockState getBlockState() {
 		return blockState.getState();
 	}
 	

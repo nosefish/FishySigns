@@ -1,4 +1,4 @@
-package net.gmx.nosefish.fishysigns.signs.plumbing;
+package net.gmx.nosefish.fishysigns.iobox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,13 @@ import java.util.TreeMap;
 
 import net.gmx.nosefish.fishylib.blocks.BlockInfo;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
-import net.gmx.nosefish.fishysigns.activator.ImmutableRedstoneChange;
-import net.gmx.nosefish.fishysigns.world.ImmutableBlockState;
+import net.gmx.nosefish.fishysigns.anchor.IAnchor;
+import net.gmx.nosefish.fishysigns.exception.UnsupportedActivatorException;
+import net.gmx.nosefish.fishysigns.watcher.RedstoneChangeWatcher;
+import net.gmx.nosefish.fishysigns.watcher.activator.ActivatorRedstone;
+import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
+import net.gmx.nosefish.fishysigns.watcher.activator.FishyRedstoneChange;
+import net.gmx.nosefish.fishysigns.world.FishyBlockState;
 import net.gmx.nosefish.fishysigns.world.Unsafe;
 
 /**
@@ -16,7 +21,7 @@ import net.gmx.nosefish.fishysigns.world.Unsafe;
  * 
  * To initialize:
  * <ul>
- * <li>Construct with FishyLocation of the sign and the desired number of pins.</li>
+ * <li> Construct with FishyLocation of the sign, the desired number of pins, and the event handler.</li>
  * <li> Set an input pin location for <i>every</i> physical input pin</li>
  * <li> Wire the physical pins to the sign inputs. A physical input can only have one outgoing
  * connection, but sign inputs can have any number of incoming connections, including 0.
@@ -34,7 +39,10 @@ import net.gmx.nosefish.fishysigns.world.Unsafe;
  * @author Stefan Steinheimer (nosfish)
  *
  */
-public class FishyDirectInputBox {
+public class DirectInputBox extends AnchoredActivatableBox {
+	public static interface IDirectInputHandler extends IAnchor{
+		public void handleDirectInputChange(FishySignSignal oldInput, FishySignSignal newInput);
+	}
 	
 	protected FishyLocationInt boxLocation;
 	
@@ -52,13 +60,29 @@ public class FishyDirectInputBox {
 	// sign side
 	protected final boolean[] signSignal;
 
+	// handler
+	protected final IDirectInputHandler handler;
 	
-	public FishyDirectInputBox(FishyLocationInt inputBoxLocation, int physicalPinCount, int signPinCount) {
+	public static DirectInputBox createAndRegister(FishyLocationInt inputBoxLocation,
+            int physicalPinCount, 
+            int signPinCount,
+            IDirectInputHandler handler) {
+		DirectInputBox box = new DirectInputBox(inputBoxLocation, physicalPinCount, signPinCount, handler);
+		box.registerWithActivationManager();
+		handler.anchor(box);
+		return box;
+	}
+	
+	private DirectInputBox(FishyLocationInt inputBoxLocation,
+	                                   int physicalPinCount, 
+	                                   int signPinCount,
+	                                   IDirectInputHandler handler) {
 		this.boxLocation = inputBoxLocation;
 		this.physInput = new ArrayList<FishyLocationInt>(physicalPinCount);
 		this.physSignal = new boolean[physicalPinCount];
 		this.phys2sign = new TreeMap<Integer, Integer>();
 		this.signSignal = new boolean[signPinCount];
+		this.handler = handler;
 	}
 	
 	
@@ -114,9 +138,13 @@ public class FishyDirectInputBox {
 	
 	
 	public void finishInit() {
+		this.registerWithActivationManager();
 		synchronized(lock) {
 			updateInputFromWorld();
 			refreshSignSignal();
+			for (FishyLocationInt blockLoc : getInputLocations()) {
+				RedstoneChangeWatcher.getInstance().register(this.getID(), blockLoc);
+			}
 		}
 	}
 	
@@ -145,16 +173,13 @@ public class FishyDirectInputBox {
 	}
 	
 	
-	public void updateInput(List<ImmutableRedstoneChange> rsChanges) {
-		boolean hasChanged;
+	public void updateInput(List<FishyRedstoneChange> rsChanges) {
 		synchronized(lock) {
 			for (int pin = 0; pin < getPhysicalPinCount(); ++pin) {
-				hasChanged = false;
 				// Assumption: only one change per input block per Activator
-				for (ImmutableRedstoneChange change : rsChanges) {
+				for (FishyRedstoneChange change : rsChanges) {
 					FishyLocationInt changeLocation = change.getLocation();
 					if (physInput.get(pin).equals(changeLocation)){
-						hasChanged = true;
 						short id = change.getBlockState().getTypeId();
 						short data = change.getBlockState().getData();
 						if (Unsafe.unsafeGetDirectInput(changeLocation, id, data, boxLocation)) {
@@ -165,11 +190,6 @@ public class FishyDirectInputBox {
 							break;
 						}
 					}
-				}
-				// hooks are not very reliable right now
-				// better check for sneaky changes from broken or placed blocks
-				if (! hasChanged) {
-					updateInputPinFromWorld(pin);
 				}
 			}
 			refreshSignSignal();
@@ -205,7 +225,7 @@ public class FishyDirectInputBox {
 			if (loc == null) {
 				return;
 			}
-			ImmutableBlockState block = Unsafe.unsafeGetBlockAt(loc);
+			FishyBlockState block = Unsafe.unsafeGetBlockAt(loc);
 			if (block == null) {
 				return;
 			}
@@ -215,4 +235,48 @@ public class FishyDirectInputBox {
 			}
 		}
 	}
+
+	public FishyLocationInt getLocation() {
+		return boxLocation;
+	}
+	
+	/**
+	 * Calls <code>handleDirectInputChange</code> with the current input
+	 * signal.
+	 * 
+	 * oldSignal and newSignal will be the same (==).
+	 */
+	public void refreshHandler() {
+		FishySignSignal signal = this.getSignal();
+		handler.handleDirectInputChange(signal, signal);
+	}
+
+	@Override
+	public void initialize() {
+		RedstoneChangeWatcher.getInstance().register(getID(), getLocation());
+	}
+
+	@Override
+	public void activate(IActivator activator) {
+		if (! ActivatorRedstone.class.equals(activator.getClass())) {
+			String aClass = ((activator == null) ? "null" : activator.getClass().getSimpleName());
+			throw new UnsupportedActivatorException("Expected "
+					+ ActivatorRedstone.class.getSimpleName()
+					+ ", but received "
+					+ aClass);
+		}
+		ActivatorRedstone rsActivator = (ActivatorRedstone) activator;
+		FishySignSignal oldInput = this.getSignal();
+		this.updateInput(rsActivator.getChanges());
+		FishySignSignal newInput = this.getSignal();
+		if (! oldInput.equals(newInput)) {
+			handler.handleDirectInputChange(oldInput, newInput);
+		}
+	}
+
+	@Override
+	public void remove() {
+		RedstoneChangeWatcher.getInstance().remove(getID());
+	}
+
 }

@@ -9,11 +9,11 @@ import net.canarymod.Canary;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.system.ServerTickHook;
 import net.canarymod.plugin.Priority;
-import net.gmx.nosefish.fishysigns.activator.Activator;
-import net.gmx.nosefish.fishysigns.activator.ActivatorServerTick;
 import net.gmx.nosefish.fishysigns.plugin.FishySigns;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
+import net.gmx.nosefish.fishysigns.watcher.activator.ActivatorServerTick;
+import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
 
 /**
  * Activates registered Activatables on every odd-numbered tick.
@@ -75,8 +75,8 @@ public class ServerOddTickWatcher implements IFishyWatcher{
 		
 		@Override
 		public void doStuff() {
-			Activator activator = new ActivatorServerTick(tick);
-			Map<Long, Activator> activationMap = new TreeMap<Long, Activator>();
+			IActivator activator = new ActivatorServerTick(tick);
+			Map<Long, IActivator> activationMap = new TreeMap<Long, IActivator>();
 			// let's get this over with quickly in order to not block registration
 			// (which happens in the main thread) longer than necessary
 			synchronized(registeredIds) {

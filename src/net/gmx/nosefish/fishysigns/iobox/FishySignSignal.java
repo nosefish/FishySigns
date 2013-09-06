@@ -1,4 +1,4 @@
-package net.gmx.nosefish.fishysigns.signs.plumbing;
+package net.gmx.nosefish.fishysigns.iobox;
 
 import java.util.Arrays;
 

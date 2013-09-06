@@ -3,8 +3,8 @@ package net.gmx.nosefish.fishysigns.radio;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.gmx.nosefish.fishysigns.activator.ActivatorRadio;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
+import net.gmx.nosefish.fishysigns.watcher.activator.ActivatorRadio;
 
 /**
  * A radio band. All registered receivers will
@@ -60,7 +60,7 @@ public class RadioBand<T> {
 			}
 			toActivate = receivers.toArray(new Long[receivers.size()]);
 		}
-		ActivatorRadio<T> activator = new ActivatorRadio<T>(name, signal);
+		ActivatorRadio activator = new ActivatorRadio(name, signal);
 		ActivationManager.getInstance().activateAll(activator, toActivate);
 	}
 

@@ -3,6 +3,7 @@ package net.gmx.nosefish.fishysigns.world;
 import net.canarymod.api.world.blocks.Block;
 import net.gmx.nosefish.fishylib.blocks.BlockInfo;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
+import net.gmx.nosefish.fishysigns.watcher.ChunkTracker;
 
 /**
  * Collection of methods for world access that will work most of the time
@@ -23,7 +24,7 @@ public final class Unsafe {
 	 * @param blockLoc
 	 * @return the block at the location (most of the time), or null if something goes wrong
 	 */
-	public static ImmutableBlockState unsafeGetBlockAt(FishyLocationInt blockLoc) {
+	public static FishyBlockState unsafeGetBlockAt(FishyLocationInt blockLoc) {
 		Block block = null;
 		WorldValuePublisher.publish();
 		try {
@@ -36,7 +37,7 @@ public final class Unsafe {
 		} catch (Exception e) {
 			// hmmmmm... *looks left and right* ... has anyone seen that?
 		}
-		return new ImmutableBlockState(block);
+		return new FishyBlockState(block);
 	}
 	
 	

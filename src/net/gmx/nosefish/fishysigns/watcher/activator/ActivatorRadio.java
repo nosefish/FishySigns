@@ -1,12 +1,12 @@
-package net.gmx.nosefish.fishysigns.activator;
+package net.gmx.nosefish.fishysigns.watcher.activator;
 
 //TODO: the generic type argument gets removed by the ActivationManager,
 // resulting in an uncheckd cast for the Activatable. That is just wrong.
-public class ActivatorRadio<T> implements Activator {
+public class ActivatorRadio implements IActivator {
 	private final String bandName;
-	private final T signal;
+	private final Object signal;
 	
-	public ActivatorRadio(String bandName, T signal) {
+	public ActivatorRadio(String bandName, Object signal) {
 		this.signal = signal;
 		this.bandName = bandName;
 	}
@@ -15,7 +15,7 @@ public class ActivatorRadio<T> implements Activator {
 		return bandName;
 	}
 	
-	public T getSignal() {
+	public Object getSignal() {
 		return signal;
 	}
 }

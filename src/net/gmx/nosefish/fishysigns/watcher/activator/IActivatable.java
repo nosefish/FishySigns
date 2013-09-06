@@ -1,16 +1,16 @@
-package net.gmx.nosefish.fishysigns.activator;
-
-import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
+package net.gmx.nosefish.fishysigns.watcher.activator;
 
 
 /**
  * Instances can register themselves with the <code>ActivationManager</code>
- * be "acitvated" by certain events.
+ * to be "acitvated" on certain events.
  * 
  * @author Stefan Steinheimer (nosefish)
  *
  */
-public interface Activatable {
+public interface IActivatable {
+	public static final Long ID_UNINITIALIZED = -1L;
+	
 	/**
 	 *  
 	 * Gets the unique ID of this Activatable that identifies it in the
@@ -33,18 +33,6 @@ public interface Activatable {
 	
 	
 	/**
-	 * Gets the location.
-	 * 
-	 * <code>Activatable</code>s are usually blocks.
-	 * <code>Activatables</code> without a location
-	 * are not supported at this time. File a bug
-	 * if you have a use for them.
-	 * 
-	 * @return the location of the <code>Activatable</code>.
-	 */
-	public FishyLocationInt getLocation();
-	
-	/**
 	 * Called when the <code>Activatable</code> has been registered. All initialization code goes here,
 	 * e.g. registering blocks with the BlockChangeWatcher.
 	 */
@@ -57,7 +45,7 @@ public interface Activatable {
 	 * 
 	 * @param activator holds the details of the activation.
 	 */
-	public void activate(Activator activator);
+	public void activate(IActivator activator);
 	
 	/**
 	 * Called when the <code>Activatable</code> has been removed from the

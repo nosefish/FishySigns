@@ -6,12 +6,12 @@ import net.canarymod.api.world.blocks.Block;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.player.BlockRightClickHook;
 import net.canarymod.plugin.Priority;
-import net.gmx.nosefish.fishysigns.activator.Activator;
-import net.gmx.nosefish.fishysigns.activator.ActivatorPlayerRightClick;
 import net.gmx.nosefish.fishysigns.plugin.FishySigns;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
-import net.gmx.nosefish.fishysigns.world.ImmutableLocationBlockState;
+import net.gmx.nosefish.fishysigns.watcher.activator.ActivatorPlayerRightClick;
+import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
+import net.gmx.nosefish.fishysigns.world.FishyLocationBlockState;
 
 
 public class PlayerRightClickWatcher extends BlockLocationWatcher{
@@ -32,7 +32,7 @@ public class PlayerRightClickWatcher extends BlockLocationWatcher{
 		}
 		Block block = hook.getBlockClicked();
 		String playerName = hook.getPlayer().getName();
-		FishyTask activate = new ActivationTask(new ImmutableLocationBlockState(block), playerName);
+		FishyTask activate = new ActivationTask(new FishyLocationBlockState(block), playerName);
 		activate.submit();
 	}
 
@@ -42,9 +42,9 @@ public class PlayerRightClickWatcher extends BlockLocationWatcher{
 	
 	
 	private class ActivationTask extends FishyTask{
-		private final ImmutableLocationBlockState blockState;
+		private final FishyLocationBlockState blockState;
 		private final String playerName;
-		public ActivationTask(ImmutableLocationBlockState blockState,
+		public ActivationTask(FishyLocationBlockState blockState,
 				String playerName){
 			this.setThreadsafe_IPromiseThatThisDoesNotTouchTheWorld();
 			this.blockState = blockState;
@@ -55,7 +55,7 @@ public class PlayerRightClickWatcher extends BlockLocationWatcher{
 		public void doStuff() {
 			Set<Long> idSet = blockLocationIndex.get(blockState.getLocation());
 			if (idSet != null) {
-				Activator activator = new ActivatorPlayerRightClick(playerName, blockState);
+				IActivator activator = new ActivatorPlayerRightClick(playerName, blockState);
 				synchronized(idSet) {
 					for (long id : idSet) {
 						ActivationManager.getInstance().activate(id, activator);

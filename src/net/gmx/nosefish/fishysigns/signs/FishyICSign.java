@@ -2,13 +2,13 @@ package net.gmx.nosefish.fishysigns.signs;
 
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.gmx.nosefish.fishylib.worldmath.FishyVectorInt;
-import net.gmx.nosefish.fishysigns.activator.Activator;
-import net.gmx.nosefish.fishysigns.activator.ActivatorPlayerRightClick;
+import net.gmx.nosefish.fishysigns.iobox.FishySignSignal;
+import net.gmx.nosefish.fishysigns.iobox.LeverOutputBox;
+import net.gmx.nosefish.fishysigns.iobox.RightClickInputBox;
+import net.gmx.nosefish.fishysigns.iobox.RightClickInputBox.IRightClickInputHandler;
 import net.gmx.nosefish.fishysigns.plugin.engine.UnloadedSign;
-import net.gmx.nosefish.fishysigns.signs.plumbing.FishyLeverOutputBox;
-import net.gmx.nosefish.fishysigns.signs.plumbing.FishySignSignal;
 import net.gmx.nosefish.fishysigns.task.common.MessagePlayerTask;
-import net.gmx.nosefish.fishysigns.watcher.PlayerRightClickWatcher;
+import net.gmx.nosefish.fishysigns.world.FishyLocationBlockState;
 
 /**
  * A RedstoneTriggeredFishySign with output support. Must be a WallSign.
@@ -18,23 +18,18 @@ import net.gmx.nosefish.fishysigns.watcher.PlayerRightClickWatcher;
  * @author Stefan Steinheimer (nosefish)
  *
  */
-public abstract class FishyICSign extends RedstoneTriggeredFishySign {
-	protected FishyLeverOutputBox outputBox;
+public abstract class FishyICSign
+              extends RedstoneTriggeredFishySign
+           implements IRightClickInputHandler{
+	
+	protected LeverOutputBox outputBox;
 	
 
 	@Override
 	public void initialize() {
-		super.initialize();
-		initializeInputBox();
+		initializeRSInputBox();
 		initializeOutputBox();
-		FishyLocationInt[] outputLocations = outputBox.getOutputLocations();
-		for (FishyLocationInt loc : outputLocations) {
-			PlayerRightClickWatcher.getInstance().register(this.getID(), loc);
-		}
-	}
-	
-	protected void updateOutput(FishySignSignal newSignal) {
-		this.outputBox.updateOutput(newSignal);
+		initializeOutputLeverClickProtection();
 	}
 	
 	/**
@@ -42,10 +37,32 @@ public abstract class FishyICSign extends RedstoneTriggeredFishySign {
 	 * If you need more than 1 pin, override
 	 */
 	protected void initializeOutputBox() {
-		outputBox = new FishyLeverOutputBox(1);
+		outputBox = new LeverOutputBox(1);
 		outputBox.setOutputLocation(0, this.getCentreOutput(1));
 		outputBox.finishInit();
 	}
+	
+	/**
+	 * Sets up RighClickInputBoxes for the output levers.
+	 */
+	// TODO: this should be in LeverOutputBox - would make it a LeverIOBox :)
+	protected void initializeOutputLeverClickProtection() {
+		FishyLocationInt[] outputLocations = outputBox.getOutputLocations();
+		for (FishyLocationInt loc : outputLocations) {
+			RightClickInputBox.createAndRegister(loc, this);
+		}
+	}
+	
+	/**
+	 * Updates the output with the new signal.
+	 * 
+	 * @param newSignal
+	 */
+	protected void updateOutput(FishySignSignal newSignal) {
+		this.outputBox.updateOutput(newSignal);
+	}
+	
+
 	
 	/**
 	 * Gets location for an output behind the sign,
@@ -89,28 +106,16 @@ public abstract class FishyICSign extends RedstoneTriggeredFishySign {
 	}
 	
 	@Override
-	public void activate(Activator activator) {
-		super.activate(activator);
-		// If a player changes an output lever, reset it. That'll show him not to mess with a FishySign!
-		// Also, we send him a message to tell him what's going on.
-		if (activator instanceof ActivatorPlayerRightClick) {
-			ActivatorPlayerRightClick ap = (ActivatorPlayerRightClick) activator;
-			FishyLocationInt clickLocation = ap.getBlockState().getLocation();
-			int pin = outputBox.getPin(clickLocation);
-			if (pin != -1) {
-				outputBox.refreshOutput();
-				MessagePlayerTask sendMsg = new MessagePlayerTask(ap.getPlayerName(), "Please do not click IC outputs!");
-				sendMsg.submit();
-			}
+	public void handleRightClick(String playerName, FishyLocationBlockState block) {
+		FishyLocationInt clickLocation = block.getLocation();
+		int pin = outputBox.getPin(clickLocation);
+		if (pin != -1) {
+			outputBox.refreshOutput();
+			MessagePlayerTask sendMsg = new MessagePlayerTask(playerName, "Why is this still in FishyICSign?");
+			sendMsg.submit();
 		}
 	}
-	
-	@Override
-	public void remove() {
-		super.remove();
-		PlayerRightClickWatcher.getInstance().remove(this.getID());
-	}
-	
+
 	@Override
 	public boolean validateOnLoad() {
 		return this.isWallSign();

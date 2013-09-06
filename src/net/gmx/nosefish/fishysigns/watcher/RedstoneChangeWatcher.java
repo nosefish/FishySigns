@@ -11,11 +11,11 @@ import net.canarymod.api.world.blocks.Block;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.world.RedstoneChangeHook;
 import net.canarymod.plugin.Priority;
-import net.gmx.nosefish.fishysigns.activator.ActivatorRedstone;
-import net.gmx.nosefish.fishysigns.activator.ImmutableRedstoneChange;
 import net.gmx.nosefish.fishysigns.plugin.FishySigns;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
+import net.gmx.nosefish.fishysigns.watcher.activator.ActivatorRedstone;
+import net.gmx.nosefish.fishysigns.watcher.activator.FishyRedstoneChange;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 
 public class RedstoneChangeWatcher extends BlockLocationWatcher{
@@ -56,7 +56,7 @@ public class RedstoneChangeWatcher extends BlockLocationWatcher{
 		int newLevel = hook.getNewLevel();
 		if ((oldLevel == 0) != (newLevel == 0) // high/low change, boolean != is XOR
 			&& this.blockLocationIndex.containsKey(new FishyLocationInt(block.getLocation()))) {
-			this.rsChangeCollector.add(new ImmutableRedstoneChange(block, oldLevel, newLevel));
+			this.rsChangeCollector.add(new FishyRedstoneChange(block, oldLevel, newLevel));
 		}
 	}
 	
@@ -74,24 +74,24 @@ public class RedstoneChangeWatcher extends BlockLocationWatcher{
 	 *
 	 */
 	private class RedstoneChangeCollector extends FishyTask {
-		private final AtomicReference<List<ImmutableRedstoneChange>> changeBuffer;
+		private final AtomicReference<List<FishyRedstoneChange>> changeBuffer;
 		
 		public RedstoneChangeCollector() {
 			this.setTickDelay(0);
 			this.setTickRepeatDelay(1);
 			changeBuffer = 
-					new AtomicReference<List<ImmutableRedstoneChange>>(
-							new LinkedList<ImmutableRedstoneChange>());
+					new AtomicReference<List<FishyRedstoneChange>>(
+							new LinkedList<FishyRedstoneChange>());
 		}		
-		public void add(ImmutableRedstoneChange rsChange) {
+		public void add(FishyRedstoneChange rsChange) {
 			changeBuffer.get().add(rsChange);
 		}
 		
 		public void doStuff(){
 			this.setNextTask(null);
-			List<ImmutableRedstoneChange> lastTickChanges = changeBuffer.get();
+			List<FishyRedstoneChange> lastTickChanges = changeBuffer.get();
 			if (! lastTickChanges.isEmpty()) {
-				changeBuffer.set(new LinkedList<ImmutableRedstoneChange>());
+				changeBuffer.set(new LinkedList<FishyRedstoneChange>());
 				this.setNextTask(new ActivationTask(lastTickChanges));
 			}
 		}
@@ -107,9 +107,9 @@ public class RedstoneChangeWatcher extends BlockLocationWatcher{
 	 *
 	 */
 	private class ActivationTask extends FishyTask {
-		private final List<ImmutableRedstoneChange> changes;
+		private final List<FishyRedstoneChange> changes;
 		
-		public ActivationTask(List<ImmutableRedstoneChange> changes) {
+		public ActivationTask(List<FishyRedstoneChange> changes) {
 			super();
 			this.setThreadsafe_IPromiseThatThisDoesNotTouchTheWorld();
 			this.changes = changes;
@@ -119,7 +119,7 @@ public class RedstoneChangeWatcher extends BlockLocationWatcher{
 		public void doStuff() {
 			Map<Long, ActivatorRedstone> activators = new TreeMap<Long, ActivatorRedstone>();
 			// group changes by ids to activate
-			for (ImmutableRedstoneChange change : changes) {
+			for (FishyRedstoneChange change : changes) {
 				Set<Long> idsToActivate = blockLocationIndex.get(change.getLocation());
 				// synchronizedSet mandates synchronization when iterating
 				synchronized(idsToActivate) {

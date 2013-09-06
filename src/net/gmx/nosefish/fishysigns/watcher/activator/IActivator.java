@@ -1,4 +1,4 @@
-package net.gmx.nosefish.fishysigns.activator;
+package net.gmx.nosefish.fishysigns.watcher.activator;
 
 /**
  * Passed to the <code>activate</code> method of
@@ -7,6 +7,6 @@ package net.gmx.nosefish.fishysigns.activator;
  * @author Stefan Steinheimer (nosefish)
  *
  */
-public interface Activator {
+public interface IActivator {
 
 }

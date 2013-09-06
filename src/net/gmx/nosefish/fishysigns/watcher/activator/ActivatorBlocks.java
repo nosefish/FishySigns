@@ -1,4 +1,4 @@
-package net.gmx.nosefish.fishysigns.activator;
+package net.gmx.nosefish.fishysigns.watcher.activator;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -10,8 +10,8 @@ import java.util.List;
  * @author Stefan Steinheimer
  *
  */
-public class ActivatorBlocks implements Activator {
-	protected final List<ImmutableBlockStateChange> blocks = new LinkedList<ImmutableBlockStateChange>();
+public class ActivatorBlocks implements IActivator {
+	protected final List<FishyBlockStateChange> blocks = new LinkedList<FishyBlockStateChange>();
 	
 	/**
 	 * Constructor
@@ -26,7 +26,7 @@ public class ActivatorBlocks implements Activator {
 	 * @param 
 	 *     change the block state change to add
 	 */
-	public void add(ImmutableBlockStateChange change) {
+	public void add(FishyBlockStateChange change) {
 		blocks.add(change);
 	}
 	
@@ -36,7 +36,7 @@ public class ActivatorBlocks implements Activator {
 	 * 
 	 * @return
 	 */
-	public List<ImmutableBlockStateChange> getBlockStateChanges() {
+	public List<FishyBlockStateChange> getBlockStateChanges() {
 		return Collections.unmodifiableList(blocks);
 	}
 

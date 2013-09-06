@@ -15,12 +15,12 @@ import net.canarymod.api.world.blocks.Block;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.system.ServerTickHook;
 import net.canarymod.plugin.Priority;
-import net.gmx.nosefish.fishysigns.activator.ActivatorBlocks;
-import net.gmx.nosefish.fishysigns.activator.ImmutableBlockStateChange;
 import net.gmx.nosefish.fishysigns.plugin.FishySigns;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
-import net.gmx.nosefish.fishysigns.world.ImmutableBlockState;
+import net.gmx.nosefish.fishysigns.watcher.activator.ActivatorBlocks;
+import net.gmx.nosefish.fishysigns.watcher.activator.FishyBlockStateChange;
+import net.gmx.nosefish.fishysigns.world.FishyBlockState;
 
 
 /**
@@ -45,14 +45,14 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 	}
 
 	// the blocks we're watching, and the state they had the last time we looked
-	private final ConcurrentMap<FishyLocationInt, ImmutableBlockState> worldBlockStates;
+	private final ConcurrentMap<FishyLocationInt, FishyBlockState> worldBlockStates;
 
 	/**
 	 * Private Constructor - this is a Singleton with a static initializer.
 	 * Use <code>getInstance</code> to access it.
 	 */
 	private PollingBlockChangeWatcher() {
-		this.worldBlockStates = new ConcurrentHashMap<FishyLocationInt, ImmutableBlockState>(64, 0.9F, 2);
+		this.worldBlockStates = new ConcurrentHashMap<FishyLocationInt, FishyBlockState>(64, 0.9F, 2);
 	}
 
 
@@ -85,7 +85,7 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 			// Put an invalid block state into the map
 			// to make it send the current block state
 			// to the Activatable on the next check pass.
-			ImmutableBlockState forceUpdate = new ImmutableBlockState((short)-1, (short)-1);
+			FishyBlockState forceUpdate = new FishyBlockState((short)-1, (short)-1);
 			worldBlockStates.put(location, forceUpdate);
 		}
 	}
@@ -108,7 +108,7 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 		if (! enabled) {
 			return;
 		}
-		List<ImmutableBlockStateChange> changes = pollBlockStates();
+		List<FishyBlockStateChange> changes = pollBlockStates();
 		if (! changes.isEmpty()) {
 			ActivationTask activate = new ActivationTask(changes);
 			activate.submit();
@@ -116,8 +116,8 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 	}
 
 
-	private List<ImmutableBlockStateChange> pollBlockStates() {
-		List<ImmutableBlockStateChange> changes = new LinkedList<ImmutableBlockStateChange>();
+	private List<FishyBlockStateChange> pollBlockStates() {
+		List<FishyBlockStateChange> changes = new LinkedList<FishyBlockStateChange>();
 		if(worldBlockStates.isEmpty()) {
 			return changes;
 		}
@@ -129,17 +129,17 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 			}
 			// world and chunk are loaded, let's check out this block
 			Block block = world.getBlockAt(location.getIntX(), location.getIntY(), location.getIntZ());
-			ImmutableBlockState oldState = worldBlockStates.get(location);
+			FishyBlockState oldState = worldBlockStates.get(location);
 			if (oldState != null && ! oldState.equalsBlock(block)) {
 				// If we're unlucky, the entry has been removed since we retrieved the value.
 				// In that case, there's no point to process it further - nobody cares about
 				// the block anymore.
-				ImmutableBlockState newState = new ImmutableBlockState(block);
+				FishyBlockState newState = new FishyBlockState(block);
 				// update the block state in the map
-				ImmutableBlockState stillRelevant = worldBlockStates.replace(location, newState);
+				FishyBlockState stillRelevant = worldBlockStates.replace(location, newState);
 				if (stillRelevant != null) {
 					// if it hasn't been removed, remember this as changed for later processing
-					changes.add(new ImmutableBlockStateChange(location, oldState, newState));
+					changes.add(new FishyBlockStateChange(location, oldState, newState));
 				}
 			}
 		}
@@ -159,9 +159,9 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 	 *
 	 */
 	private class ActivationTask extends FishyTask {
-		private final List<ImmutableBlockStateChange> changes;
+		private final List<FishyBlockStateChange> changes;
 
-		private ActivationTask(List<ImmutableBlockStateChange> changes) {
+		private ActivationTask(List<FishyBlockStateChange> changes) {
 			super();
 			this.setThreadsafe_IPromiseThatThisDoesNotTouchTheWorld();
 			this.changes = changes;
@@ -170,7 +170,7 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 		@Override
 		public void doStuff() {
 			Map<Long, ActivatorBlocks> toActivate = new TreeMap<Long, ActivatorBlocks>();
-			for (ImmutableBlockStateChange change : changes) {
+			for (FishyBlockStateChange change : changes) {
 				// find out who is interested in this change
 				Set<Long> recipients = PollingBlockChangeWatcher.this.blockLocationIndex.get(change.getLocation());
 				if (recipients == null) {

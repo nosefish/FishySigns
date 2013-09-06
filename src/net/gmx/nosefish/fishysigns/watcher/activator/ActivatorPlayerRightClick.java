@@ -1,6 +1,6 @@
-package net.gmx.nosefish.fishysigns.activator;
+package net.gmx.nosefish.fishysigns.watcher.activator;
 
-import net.gmx.nosefish.fishysigns.world.ImmutableLocationBlockState;
+import net.gmx.nosefish.fishysigns.world.FishyLocationBlockState;
 
 /**
  * Contains information about a right mouse button click
@@ -9,9 +9,9 @@ import net.gmx.nosefish.fishysigns.world.ImmutableLocationBlockState;
  * @author Stefan Steinheimer (nosefish)
  *
  */
-public class ActivatorPlayerRightClick implements Activator {
+public class ActivatorPlayerRightClick implements IActivator {
 	private final String playerName;
-	private final ImmutableLocationBlockState block;
+	private final FishyLocationBlockState block;
 	
 	/**
 	 * Constructor
@@ -22,7 +22,7 @@ public class ActivatorPlayerRightClick implements Activator {
 	 * @param block
 	 *     the block on which the player clicked
 	 */
-	public ActivatorPlayerRightClick(String name, ImmutableLocationBlockState block) {
+	public ActivatorPlayerRightClick(String name, FishyLocationBlockState block) {
 		this.playerName = name;
 		this.block = block;
 	}
@@ -43,7 +43,7 @@ public class ActivatorPlayerRightClick implements Activator {
 	 * @return
 	 *    the block
 	 */
-	public ImmutableLocationBlockState getBlockState() {
+	public FishyLocationBlockState getBlockState() {
 		return block;
 	}
 }

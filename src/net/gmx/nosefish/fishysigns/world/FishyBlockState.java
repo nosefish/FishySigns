@@ -2,16 +2,16 @@ package net.gmx.nosefish.fishysigns.world;
 
 import net.canarymod.api.world.blocks.Block;
 
-public class ImmutableBlockState {
+public class FishyBlockState {
 	private final short typeId;
 	private final short data;
 	
-	public ImmutableBlockState(Block block) {
+	public FishyBlockState(Block block) {
 		this.typeId = block.getTypeId();
 		this.data = block.getData();
 	}
 	
-	public ImmutableBlockState(short blockId, short data) {
+	public FishyBlockState(short blockId, short data) {
 		this.typeId = blockId;
 		this.data = data;
 	}
@@ -36,8 +36,8 @@ public class ImmutableBlockState {
 	}
 	
 	public boolean equals(Object other) {
-		if (other instanceof ImmutableBlockState) {
-			ImmutableBlockState otherState = (ImmutableBlockState) other;
+		if (other instanceof FishyBlockState) {
+			FishyBlockState otherState = (FishyBlockState) other;
 			return this.typeId == otherState.typeId
 					&& this.data == otherState.data;
 		}

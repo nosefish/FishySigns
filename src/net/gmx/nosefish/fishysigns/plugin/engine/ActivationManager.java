@@ -1,21 +1,14 @@
 package net.gmx.nosefish.fishysigns.plugin.engine;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import net.gmx.nosefish.fishysigns.activator.Activatable;
-import net.gmx.nosefish.fishysigns.activator.Activator;
-import net.gmx.nosefish.fishysigns.task.FishyTask;
-
-import net.gmx.nosefish.fishylib.datastructures.ConcurrentMapWithTreeSet;
-import net.gmx.nosefish.fishylib.worldmath.FishyChunk;
-import net.gmx.nosefish.fishylib.worldmath.FishyLocation;
-import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
+import net.gmx.nosefish.fishysigns.plugin.FishySigns;
+import net.gmx.nosefish.fishysigns.watcher.IFishyWatcher;
+import net.gmx.nosefish.fishysigns.watcher.activator.IActivatable;
+import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
 
 /**
  * Holds an index of all known <code>Activatables</code>. Only <code>Acivatable</code>s
@@ -28,27 +21,27 @@ import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
  * @author Stefan Steinheimer (nosefish)
  *
  */
-public final class ActivationManager {
+public final class ActivationManager implements IFishyWatcher{
 	// singleton
 	private static final ActivationManager instance = new ActivationManager();
+	static{
+		FishySigns.addWatcher(instance);
+	}
 
+	private volatile boolean enabled = false;
 	// instance
 	private final ReentrantReadWriteLock indexLock = new ReentrantReadWriteLock();
 	private final Lock indexReadLock = indexLock.readLock();
 	private final Lock indexWriteLock = indexLock.writeLock();
 	private long idCounter; // guarded by indexLock
-	private Map<Long, Activatable> idIndex; // guarded by indexLock
-	private Map<FishyLocationInt, Long> locationIndex; // guarded by indexLock
-	private ConcurrentMapWithTreeSet<FishyLocationInt, Long> chunkIndex; // guarded by indexLock
+	private Map<Long, IActivatable> idIndex; // guarded by indexLock
 	
 	/**
 	 * Private constructor for singleton
 	 */
 	private ActivationManager() {
-		this.idCounter = 0;
-		this.idIndex = new HashMap<Long, Activatable>(64, 0.8F);
-		this.locationIndex = new HashMap<FishyLocationInt, Long>(64, 0.8F);
-		this.chunkIndex = new ConcurrentMapWithTreeSet<FishyLocationInt, Long>();
+		this.idCounter = 0L;
+		this.idIndex = new HashMap<Long, IActivatable>(64, 0.8F);
 	}
 	
 	/**
@@ -68,17 +61,16 @@ public final class ActivationManager {
 	 * 
 	 * @param activatable the <code>Activatable</code> to register
 	 */
-	public void register(Activatable activatable) {
+	public void register(IActivatable activatable) {
+		if (! enabled) {
+			return;
+		}
 		long id;
 		try {
 			indexWriteLock.lock();
 			id = ++idCounter;
 			idIndex.put(id, activatable);
-			if (activatable.getLocation() != null) {
-				locationIndex.put(activatable.getLocation(), id);
-				chunkIndex.put(FishyChunk.getChunkContaining(activatable.getLocation()), id);
-				activatable.setID(id);
-			}
+			activatable.setID(id);
 		} finally {
 			indexWriteLock.unlock();
 		}
@@ -92,7 +84,10 @@ public final class ActivationManager {
 	 * @return
 	 * 		<code>true</code> if the ActivationManager has an entry for the id, <code>false</code otherwise.
 	 */
-	public boolean hasID(long id){
+	public boolean hasID(long id) {
+		if (! enabled) {
+			return false;
+		}
 		boolean result = false; 
 		indexReadLock.lock();
 		try {
@@ -103,43 +98,24 @@ public final class ActivationManager {
 		return result;
 	}
 	
-	/**
-	 * Called by the <code>FishyEngineListener</code> when a chunk is unloaded.
-	 * 
-	 * @param chunk
-	 */
-	public void removeAllInChunk(FishyChunk chunk) {
-		RemoveAllActivatablesInChunkTask task = new RemoveAllActivatablesInChunkTask(chunk);
-		task.submit();
-	}
-	
-	/**
-	 * Called by the <code>FishyEngineListener</code> when a block is destroyed,
-	 * and by the <code>RemoveAllActivatablesInChunkTask</code>.
-	 * 
-	 * @param location
-	 */
-	public void remove(FishyLocation location) {
-		Long id;
-		Activatable toRemove = null;
-		indexWriteLock.lock();
-		try {
-			id = locationIndex.get(location);
-			toRemove = idIndex.get(id);
-			// remove id from indices
-			if (id != null) {
-				locationIndex.remove(location);
-				chunkIndex.removeValue(id);
-				idIndex.remove(id);
 
+	
+		public void remove(Long id) {
+			if (! enabled) {
+				return;
 			}
-		} finally {
-			indexWriteLock.unlock();
-		}
-		if (toRemove != null) {
+			IActivatable toRemove = null;
+			indexWriteLock.lock();
+			try {
+				toRemove = idIndex.get(id);
+				idIndex.remove(id);
+			} finally {
+				indexWriteLock.unlock();
+			}
+			if (toRemove != null) {
 				toRemove.remove();
+			}
 		}
-	}
 	
 	/**
 	 * Activates all registered <code>Activatables</code> represented by the ids in the list
@@ -148,7 +124,10 @@ public final class ActivationManager {
 	 * @param activator the <code>Activator</code> to send to the <code>Activatables</code>
 	 * @param toActivate ids to activate
 	 */
-	public void activateAll(Activator activator, Long... toActivate) {
+	public void activateAll(IActivator activator, Long... toActivate) {
+		if (! enabled) {
+			return;
+		}
 		for (Long id : toActivate) {
 			activate(id, activator);
 		}
@@ -161,8 +140,11 @@ public final class ActivationManager {
 	 * 
 	 * @param toActivate id/<code>Activator</code> pairs to process
 	 */
-	public void activateAll(Map<Long, ? extends Activator> toActivate) {
-		for (Map.Entry<Long, ? extends Activator> entry : toActivate.entrySet()) {
+	public void activateAll(Map<Long, ? extends IActivator> toActivate) {
+		if (! enabled) {
+			return;
+		}
+		for (Map.Entry<Long, ? extends IActivator> entry : toActivate.entrySet()) {
 			activate(entry.getKey(), entry.getValue());
 		}
 	}
@@ -175,79 +157,36 @@ public final class ActivationManager {
 	 * @param id
 	 * @param activator
 	 */
-	public void activate(long id, Activator activator) {
-		Activatable toActivate = null;
+	public void activate(long id, IActivator activator) {
+		if (! enabled) {
+			return;
+		}
+		IActivatable toActivate = null;
 		indexReadLock.lock();
 		try {
 			toActivate = idIndex.get(id);
 		}finally {
 			indexReadLock.unlock();
 		}
-		
 		if (toActivate != null) {
 			toActivate.activate(activator);
 		}
 	}
-	
-	/**
-	 * Activates the <code>Activatable</code> at the specified
-	 * location with the <code>Activator</code>.
-	 * 
-	 * @param location
-	 * @param activator
-	 */
-	public void activate(FishyLocationInt location, Activator activator) {
-		long id;
-		try {
-			indexReadLock.lock();
-			id = locationIndex.get(location);
-		} finally {
-			indexReadLock.unlock();
-		}
-		this.activate(id, activator);
+
+	@Override
+	public void enable() {
+		enabled = true;
 	}
-	
-	/**
-	 * An asynchronous <code>FishyTask</code> that removes all
-	 * <code>Acivatable</code>s in the specified chunk from the indices.
-	 * 
-	 * @author Stefan Steinheimer
-	 *
-	 */
-	private class RemoveAllActivatablesInChunkTask extends FishyTask {
-		FishyChunk chunk;
-		
-		public RemoveAllActivatablesInChunkTask(FishyChunk chunk) {
-			this.setThreadsafe_IPromiseThatThisDoesNotTouchTheWorld();
-			this.chunk = chunk;
-		}
 
-		@Override
-		public void doStuff() {
-			Set<Long> idSet = null;
-			List<FishyLocation> locationsInChunk = new LinkedList<FishyLocation>();
-			List<Long> idsInChunk = new LinkedList<Long>();
-			indexReadLock.lock();
-			try {
-				idSet = chunkIndex.get(chunk);
-				if (idSet != null) {
-					// there are registered Activatables in this chunk
-					// let's find out where exactly
-					synchronized(idSet) {
-						for (long id : idSet) {
-							idsInChunk.add(id);
-							Activatable activatable = idIndex.get(id);
-							locationsInChunk.add(activatable.getLocation());
-						}
-					}
-				}
-			} finally {
-				indexReadLock.unlock();
-			}
-			for (FishyLocation location : locationsInChunk) {
-				ActivationManager.this.remove(location);
-			}
+	@Override
+	public void disable() {
+		enabled = false;
+		indexWriteLock.lock();
+		try {
+			idCounter = 0L;
+			idIndex.clear();
+		} finally {
+			indexWriteLock.unlock();
 		}
-	} // end of internal class
-
+	}
 }

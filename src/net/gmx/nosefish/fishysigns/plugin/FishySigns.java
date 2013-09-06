@@ -11,25 +11,24 @@ import net.canarymod.Canary;
 import net.canarymod.api.world.Chunk;
 import net.canarymod.api.world.World;
 import net.canarymod.plugin.Plugin;
-import net.canarymod.plugin.PluginListener;
 import net.canarymod.tasks.ServerTaskManager;
 import net.canarymod.tasks.TaskOwner;
 import net.gmx.nosefish.fishylib.worldmath.FishyChunk;
 import net.gmx.nosefish.fishysigns.Log;
+import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
 import net.gmx.nosefish.fishysigns.plugin.engine.FishyEngineListener;
 import net.gmx.nosefish.fishysigns.plugin.engine.FishySignClassLoader;
 import net.gmx.nosefish.fishysigns.plugin.engine.FishySignFinderTask;
 import net.gmx.nosefish.fishysigns.plugin.engine.ServerTicker;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 import net.gmx.nosefish.fishysigns.task.FishyTaskManager;
+import net.gmx.nosefish.fishysigns.watcher.ChunkTracker;
 import net.gmx.nosefish.fishysigns.watcher.IFishyWatcher;
-import net.gmx.nosefish.fishysigns.world.ChunkTracker;
 
 public class FishySigns extends Plugin implements TaskOwner{
 	private static Set<IFishyWatcher> watchers = Collections.newSetFromMap(
 	                                             new WeakHashMap<IFishyWatcher, Boolean>(8, 0.9f));
-	private static boolean enabled = false;
-	private static WeakReference<FishySigns> instance = new WeakReference<FishySigns>(null);
+	private static volatile WeakReference<FishySigns> instance = new WeakReference<FishySigns>(null);
 	
 	@Override
 	public boolean enable() {
@@ -37,46 +36,49 @@ public class FishySigns extends Plugin implements TaskOwner{
 		Log.initialize(this);
 		ServerTicker.getInstance().start();
 		FishyTaskManager.initialize(this);
-		ChunkTracker.getInstance().clear();
+		// TODO: this isn't pretty, but we must load the classes here. Is there a better way?
+		ActivationManager.getInstance().enable();
+		ChunkTracker.getInstance().enable();
 		enableWatchers();
 		FishySignClassLoader.getInstance().loadAllFishySignClasses();
 		findAllLoadedFishySigns();
 		registerListeners();
-		enabled = true;
 		return true;
 	}
 	
 	@Override
 	public void disable() {
-		enabled = false;
 		new WeakReference<FishySigns>(null);
 		disableWatchers();
 		FishyTaskManager.getInstance().shutdown();
 		ServerTicker.getInstance().shutdown();
 		ServerTaskManager.removeTasksForPlugin(this);
-		ChunkTracker.getInstance().clear();
 	}
 	
 	/**
 	 * Usually called in a static initializer, but can be
-	 * called at runtime, for example by a plugin that wants
+	 * called any time, for example by a plugin that wants
 	 * to add a custom watcher.
 	 * 
 	 * @param watcher
 	 */
 	public static void addWatcher(IFishyWatcher watcher) {
+		Log.get().logInfo("adding Watcher: " + watcher.getClass().getSimpleName());
 		watchers.add(watcher);
-		if (enabled) {
+		if (instance.get() != null) {
 			watcher.enable();
+			Log.get().logInfo("registering Listener: " + watcher.getClass().getSimpleName());
 			Canary.hooks().registerListener(watcher, instance.get());
 		}
 	}
 	
 	private void registerListeners() {
 		Canary.hooks().registerListener(new FishyEngineListener(), this);
-		for (PluginListener watcher : watchers) {
-			Canary.hooks().registerListener(watcher, this);
-		}
+		// is there any conceivable case where this is needed?
+//		for (PluginListener watcher : watchers) {
+//			Log.get().logInfo("registering Listener: " + watcher.getClass().getSimpleName());
+//			Canary.hooks().registerListener(watcher, this);
+//		}
 	}
 	
 	private void enableWatchers() {
@@ -108,7 +110,7 @@ public class FishySigns extends Plugin implements TaskOwner{
 			}
 			List<FishyChunk> loadedFishyChunks = new ArrayList<FishyChunk>(loadedChunks.size());
 			for (Chunk chunk : loadedChunks) {
-				ChunkTracker.getInstance().add(chunk);
+				ChunkTracker.getInstance().addChunk(chunk);
 				loadedFishyChunks.add(new FishyChunk(chunk));
 			}
 			FishyTask signFinder = new FishySignFinderTask(loadedFishyChunks);
