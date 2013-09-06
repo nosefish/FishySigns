@@ -251,7 +251,7 @@ public class DirectInputBox extends AnchoredActivatableBox {
 	}
 
 	@Override
-	public void initialize() {
+	public void initActivatable() {
 		RedstoneChangeWatcher.getInstance().register(getID(), getLocation());
 	}
 

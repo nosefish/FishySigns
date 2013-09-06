@@ -1,5 +1,7 @@
 package net.gmx.nosefish.fishysigns.iobox;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import net.gmx.nosefish.fishysigns.anchor.Anchor;
 import net.gmx.nosefish.fishysigns.anchor.IAnchor;
 import net.gmx.nosefish.fishysigns.anchor.IAnchorable;
@@ -8,6 +10,9 @@ import net.gmx.nosefish.fishysigns.watcher.activator.IActivatable;
 
 public abstract class AnchoredActivatableBox implements IAnchorable, IActivatable{
 	private volatile Long id = IActivatable.ID_UNINITIALIZED;
+	private AtomicBoolean anchorIsRaised = new AtomicBoolean(false);
+
+	
 	
 	@Override
 	public long getID() {
@@ -22,8 +27,22 @@ public abstract class AnchoredActivatableBox implements IAnchorable, IActivatabl
 		}
 	}
 	
+	/**
+	 * Avoid possible race condition leading to memory leak!
+	 */
+	@Override
+	public final void initialize() {
+		initActivatable();
+		if (anchorIsRaised.get()) {
+			this.remove();
+		}
+	}
+	
+	protected abstract void initActivatable();
+	
 	@Override
 	public void anchorRaised(Anchor anchor) {
+		anchorIsRaised.set(true);
 		ActivationManager.getInstance().remove(this.getID());
 	}
 	

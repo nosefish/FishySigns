@@ -30,7 +30,7 @@ public class RightClickInputBox extends AnchoredActivatableBox {
 	}
 
 	@Override
-	public void initialize() {
+	public void initActivatable() {
 		PlayerRightClickWatcher.getInstance().register(this.getID(), location);
 	}
 

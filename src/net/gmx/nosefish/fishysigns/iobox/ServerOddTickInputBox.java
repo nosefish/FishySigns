@@ -28,7 +28,7 @@ public class ServerOddTickInputBox extends AnchoredActivatableBox {
 	}
 	
 	@Override
-	public void initialize() {
+	public void initActivatable() {
 		ServerOddTickWatcher.getInstance().register(this.getID());
 	}
 

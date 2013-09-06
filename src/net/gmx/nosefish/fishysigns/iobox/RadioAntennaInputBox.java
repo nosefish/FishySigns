@@ -43,7 +43,7 @@ public class RadioAntennaInputBox<T> extends AnchoredActivatableBox {
 	}
 	
 	@Override
-	public void initialize() {
+	public void initActivatable() {
 		radioTower.tuneIn(this.getID(), bandName);
 	}
 
