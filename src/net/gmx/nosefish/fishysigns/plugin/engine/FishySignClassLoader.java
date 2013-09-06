@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -91,7 +92,7 @@ public final class FishySignClassLoader {
 							signTypes.put(regEx,
 									loadedClass.asSubclass(FishySign.class));
 							Log.get().logInfo("Loaded FishySign class " + className);
-						} else {
+						} else if (! Modifier.isAbstract(loadedClass.getModifiers())) {
 							Log.get().logWarning(
 									"Could not load FishySign class " + className
 									+ " - no @FishySignIdentifier found.");
