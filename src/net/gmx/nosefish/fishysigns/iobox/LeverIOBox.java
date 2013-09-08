@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import net.canarymod.api.world.blocks.BlockType;
 import net.gmx.nosefish.fishylib.blocks.BlockInfo;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
-import net.gmx.nosefish.fishysigns.Log;
 import net.gmx.nosefish.fishysigns.anchor.IAnchor;
 import net.gmx.nosefish.fishysigns.exception.UnsupportedActivatorException;
 import net.gmx.nosefish.fishysigns.task.common.OutputLever;
@@ -49,7 +48,6 @@ public class LeverIOBox extends AnchoredActivatableBox {
 	public static LeverIOBox createAndRegister(int pinCount, ILeverIOHandler handler) {
 		LeverIOBox box = new LeverIOBox(pinCount, handler);
 		registerWithActivationManagerAndAnchor(box, handler);
-		Log.get().logInfo("LeverIOBox created");
 		return box;
 	}
 	
@@ -157,7 +155,6 @@ public class LeverIOBox extends AnchoredActivatableBox {
 
 	@Override
 	public void activate(IActivator activator) {
-		Log.get().logInfo("LeverIOBox activated");
 		if (! ActivatorPlayerRightClick.class.equals(activator.getClass())) {
 			String aClass = ((activator == null) ? "null" : activator.getClass().getSimpleName());
 			throw new UnsupportedActivatorException("Expected "
@@ -168,7 +165,6 @@ public class LeverIOBox extends AnchoredActivatableBox {
 		ActivatorPlayerRightClick aprc = (ActivatorPlayerRightClick)activator;
 		if (aprc.getBlockState().getTypeId() != BlockType.Lever.getId()) {
 			// not a lever, so we don't care
-			Log.get().logInfo("LeverIOBox not a lever");
 			return;
 		}
 		FishySignSignal oldSignal = this.getSignal();
@@ -195,7 +191,6 @@ public class LeverIOBox extends AnchoredActivatableBox {
 	@Override
 	protected void initActivatable() {
 		for (FishyLocationInt location : physOutput) {
-			Log.get().logInfo("LeverIOBox now watching block " + location);
 			PlayerRightClickWatcher.getInstance().register(this.getID(), location);
 		}
 	}

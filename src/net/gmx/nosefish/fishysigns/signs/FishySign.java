@@ -163,6 +163,10 @@ public abstract class FishySign extends Anchor implements IAnchorable {
 		return this.text[line];
 	}
 	
+	public final synchronized void setLine(int line, String newText) {
+		this.text[line] = newText;
+	}
+	
 	/**
 	 * Gets a copy of the sign text
 	 * 
@@ -189,6 +193,9 @@ public abstract class FishySign extends Anchor implements IAnchorable {
 	
 	/**
 	 * Writes the sign text to the sign in the world.
+	 * 
+	 * Rather expensive operation, only call when you're
+	 * done with all your changes.
 	 */
 	protected synchronized void updateSignTextInWorld() {
 		ChangeSignTextTask signUpdater = new ChangeSignTextTask(this.getLocation(), this.getTextCopy());

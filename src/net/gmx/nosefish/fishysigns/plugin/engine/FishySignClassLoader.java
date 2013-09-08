@@ -99,16 +99,13 @@ public final class FishySignClassLoader {
 						}
 					} else {
 						// not subclass of FishySign.
-						//Log.get().logWarning(className + " in " + pathToJar + " is not a subclass of FishySign");
 					}
 				} catch (ClassNotFoundException cnf) {
-					// for some strange reason, the class has disappeared from the jar
-					//Log.get().logStacktrace("Could not load class from jar", cnf);
+					Log.get().logStacktrace("Could not load class from jar", cnf);
 				}
 			}
 		} catch (IOException e) {
-			// error accessing the jar
-			//Log.get().logStacktrace("Could not load class from jar", e);
+			Log.get().logStacktrace("Could not load class from jar", e);
 		}
 	}
 
@@ -169,23 +166,17 @@ public final class FishySignClassLoader {
 				Constructor<? extends FishySign> signConstructor = signClass.getConstructor(UnloadedSign.class); 
 				fishySign = signConstructor.newInstance(sign);
 			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.get().logStacktrace("Failed to instantiate FishySign", e);
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.get().logStacktrace("Failed to instantiate FishySign", e);
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.get().logStacktrace("Failed to instantiate FishySign", e);
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.get().logStacktrace("Failed to instantiate FishySign", e);
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.get().logStacktrace("Failed to instantiate FishySign", e);
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.get().logStacktrace("Failed to instantiate FishySign", e);
 			}
 		}
 		return fishySign;
