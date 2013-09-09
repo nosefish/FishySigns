@@ -18,4 +18,8 @@ public class StringTools {
 		}
 		return inputString;
 	}
+	
+	public static String replaceAmpersandWithParagraph(String inputString) {
+		return inputString.replace('&', '\u00A7');
+	}
 }

@@ -2,11 +2,11 @@ package net.gmx.nosefish.fishysigns.task.common;
 
 import net.canarymod.Canary;
 import net.canarymod.api.entity.living.humanoid.Player;
-import net.canarymod.chat.Colors;
+import net.canarymod.chat.TextFormat;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 
 public class MessagePlayerTask extends FishyTask {
-	private static final String DEFAULT_COLOUR = Colors.ORANGE;
+	private static final String DEFAULT_COLOUR = TextFormat.ORANGE;
 	private final String playerName;
 	private final String colouredMessage;
 	
