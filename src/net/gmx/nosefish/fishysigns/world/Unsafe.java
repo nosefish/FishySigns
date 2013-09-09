@@ -37,7 +37,7 @@ public final class Unsafe {
 		} catch (Exception e) {
 			// hmmmmm... *looks left and right* ... has anyone seen that?
 		}
-		return new FishyBlockState(block);
+		return (block == null) ? null : new FishyBlockState(block);
 	}
 	
 	

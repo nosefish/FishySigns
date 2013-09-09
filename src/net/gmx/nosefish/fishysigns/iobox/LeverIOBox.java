@@ -145,6 +145,13 @@ public class LeverIOBox extends AnchoredActivatableBox {
 		}
 	}
 	
+	public void toggleOutput(int pin) {
+		synchronized(lock) {
+			this.physSignal[pin] = ! physSignal[pin];
+			refreshOutput();
+		}
+	}
+	
 	public void refreshOutput() {
 		synchronized(lock) {
 			for (int pin = 0; pin < getPinCount(); ++pin) {
