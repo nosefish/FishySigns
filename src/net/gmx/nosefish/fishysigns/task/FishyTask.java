@@ -149,6 +149,9 @@ public abstract class FishyTask implements Runnable, Delayed, TickDelayed {
 	 */
 	public synchronized boolean submit() {
 		try {
+			if (this.isCancelled()) {
+				return false;
+			}
 			submitTimeNanos = System.nanoTime();
 			submitTick = ServerTicker.getInstance().getTickCount();
 			FishyTaskManager.submit(this);

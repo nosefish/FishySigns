@@ -2,7 +2,7 @@ package net.gmx.nosefish.fishysigns.signtools;
 
 import java.util.regex.Pattern;
 
-public class RegExCollection {
+public class PatternLib {
 	/**
 	 * Predefined Pattern: CraftBook-Extra input swap - any combination of "abc"
 	 */
@@ -44,5 +44,12 @@ public class RegExCollection {
 	 * Predefined Pattern: floating point number
 	 */
 	public static final Pattern pattern_POSITIVE_FLOAT =
-			Pattern.compile("[0-9]+(:\\.[0-9]+)?");
+			Pattern.compile("[0-9]+(\\.[0-9]+)?");
+	
+	/**
+	 * Predefined Pattern: FishyVectorInt with components 
+	 * delimited by ',' or ':'
+	 */
+	public static final Pattern pattern_FISHY_VECTOR_INT =
+			Pattern.compile("([\\-]?[0-9]+[:,]){2}[\\-]?[0-9]+");
 }

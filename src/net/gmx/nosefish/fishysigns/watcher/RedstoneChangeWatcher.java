@@ -121,6 +121,9 @@ public class RedstoneChangeWatcher extends BlockLocationWatcher{
 			// group changes by ids to activate
 			for (FishyRedstoneChange change : changes) {
 				Set<Long> idsToActivate = blockLocationIndex.get(change.getLocation());
+				if (idsToActivate == null) {
+					continue;
+				}
 				// synchronizedSet mandates synchronization when iterating
 				synchronized(idsToActivate) {
 					for (long id : idsToActivate) {

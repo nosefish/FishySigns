@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.gmx.nosefish.fishylib.worldmath.FishyVectorInt;
+
 
 public class FishyParser {
 	/**
@@ -152,5 +154,31 @@ public class FishyParser {
 			tokenMap.put(key_NO_MATCH, noMatch);
 		}
 		return tokenMap;
+	}
+	
+	/**
+	 * Converts a String of the form x:y:z or x,y,z
+	 * to a <code>FishyVectorInt(x, y, z)</code>.
+	 * 
+	 * @param inputString
+	 * @return
+	 *    the FishyVectorInt encoded in the input string,
+	 *    or <code>null</code> if the input string is not
+	 *    a valid representation of a FishyIntVector.
+	 */
+	public static FishyVectorInt parseVectorInt(String inputString) {
+		String[] parts = inputString.split("[:,]");
+		if (parts.length != 3) {
+			return null;
+		}
+		int[] numbers = new int[parts.length];
+		try {
+			for (int i = 0; i < parts.length; i++) {
+				numbers[i] = Integer.parseInt(parts[i]);
+			}
+		} catch (NumberFormatException e) {
+			return null;
+		}
+		return new FishyVectorInt(numbers[0], numbers[1], numbers[2]);
 	}
 }

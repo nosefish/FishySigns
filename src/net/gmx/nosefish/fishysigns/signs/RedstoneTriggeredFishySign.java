@@ -3,6 +3,7 @@ package net.gmx.nosefish.fishysigns.signs;
 import net.gmx.nosefish.fishylib.worldmath.FishyDirection;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.gmx.nosefish.fishysigns.iobox.DirectInputBox;
+import net.gmx.nosefish.fishysigns.iobox.IOSignal;
 import net.gmx.nosefish.fishysigns.iobox.DirectInputBox.IDirectInputHandler;
 import net.gmx.nosefish.fishysigns.plugin.engine.UnloadedSign;
 
@@ -53,7 +54,18 @@ public abstract class RedstoneTriggeredFishySign
 		return result;
 	}
 
-
+	protected boolean isRisingEdge(IOSignal oldS, IOSignal newS, int pin) {
+		return (! oldS.getState(pin) && newS.getState(pin));
+	}
+	
+	protected boolean isFallingEdge(IOSignal oldS, IOSignal newS, int pin) {
+		return (oldS.getState(pin) && ! newS.getState(pin));
+	}
+	
+	
+	protected boolean isChange(IOSignal oldS, IOSignal newS) {
+		return oldS.equals(newS);
+	}
 	/**
 	 * Do not call this constructor directly.
 	 * Use <code>FishySign.loadAndRegister</code> or <code>FishySign.createAndRegister</code> to instantiate new FishySigns.
