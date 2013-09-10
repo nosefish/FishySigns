@@ -7,7 +7,7 @@ import net.gmx.nosefish.fishylib.worldmath.FishyVectorInt;
 import net.gmx.nosefish.fishysigns.Log;
 import net.gmx.nosefish.fishysigns.anchor.IAnchor;
 import net.gmx.nosefish.fishysigns.anchor.IAnchorable;
-import net.gmx.nosefish.fishysigns.iobox.FishySignSignal;
+import net.gmx.nosefish.fishysigns.iobox.IOSignal;
 import net.gmx.nosefish.fishysigns.iobox.LeverIOBox;
 import net.gmx.nosefish.fishysigns.iobox.LeverIOBox.ILeverIOHandler;
 import net.gmx.nosefish.fishysigns.plugin.engine.UnloadedSign;
@@ -49,7 +49,7 @@ public abstract class FishyICSign
 	 * 
 	 * @param newSignal
 	 */
-	protected void updateOutput(FishySignSignal newSignal) {
+	protected void updateOutput(IOSignal newSignal) {
 		this.outputBox.updateOutput(newSignal);
 	}
 	
@@ -132,7 +132,7 @@ public abstract class FishyICSign
 
 		@Override
 		public boolean handleIOLeverRightClick(
-				String playerName, FishySignSignal currentSignal, int pinClicked) {
+				String playerName, IOSignal currentSignal, int pinClicked) {
 			
 			MessagePlayerTask sendMsg = new MessagePlayerTask(playerName, message);
 			sendMsg.submit();
@@ -141,8 +141,8 @@ public abstract class FishyICSign
 		}
 
 		@Override
-		public void handleIOLeverStateChanged(FishySignSignal oldSignal,
-				FishySignSignal newSignal) {
+		public void handleIOLeverStateChanged(IOSignal oldSignal,
+				IOSignal newSignal) {
 			// we always deny, this shouldn't be called at all
 			Log.get().logWarning("FishyICSign.LeverClickBlocker: " +
 					"handleIOLeverStateChanged was called unexpectedly.");

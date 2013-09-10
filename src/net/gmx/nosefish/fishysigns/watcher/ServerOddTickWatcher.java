@@ -1,9 +1,10 @@
 package net.gmx.nosefish.fishysigns.watcher;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+
 
 import net.canarymod.Canary;
 import net.canarymod.hook.HookHandler;
@@ -29,7 +30,7 @@ public class ServerOddTickWatcher implements IFishyWatcher{
 	
 	private boolean enabled = false;
 	
-	private Set<Long> registeredIds = new TreeSet<Long>();
+	private Set<Long> registeredIds = new LinkedHashSet<Long>(32);
 	
 	public static ServerOddTickWatcher getInstance() {
 		return instance;
@@ -76,7 +77,7 @@ public class ServerOddTickWatcher implements IFishyWatcher{
 		@Override
 		public void doStuff() {
 			IActivator activator = new ActivatorServerTick(tick);
-			Map<Long, IActivator> activationMap = new TreeMap<Long, IActivator>();
+			Map<Long, IActivator> activationMap = new LinkedHashMap<Long, IActivator>();
 			// let's get this over with quickly in order to not block registration
 			// (which happens in the main thread) longer than necessary
 			synchronized(registeredIds) {

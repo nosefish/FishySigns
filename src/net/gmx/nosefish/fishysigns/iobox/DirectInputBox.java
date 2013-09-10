@@ -41,7 +41,7 @@ import net.gmx.nosefish.fishysigns.world.Unsafe;
  */
 public class DirectInputBox extends AnchoredActivatableBox {
 	public static interface IDirectInputHandler extends IAnchor{
-		public void handleDirectInputChange(FishySignSignal oldInput, FishySignSignal newInput);
+		public void handleDirectInputChange(IOSignal oldInput, IOSignal newInput);
 	}
 	
 	protected FishyLocationInt boxLocation;
@@ -148,9 +148,9 @@ public class DirectInputBox extends AnchoredActivatableBox {
 	}
 	
 	
-	public FishySignSignal getSignal() {
+	public IOSignal getSignal() {
 		synchronized(lock) {
-			return new FishySignSignal(signSignal);
+			return IOSignal.factory(signSignal);
 		}
 	}
 	
@@ -246,7 +246,7 @@ public class DirectInputBox extends AnchoredActivatableBox {
 	 * oldSignal and newSignal will be the same (==).
 	 */
 	public void refreshHandler() {
-		FishySignSignal signal = this.getSignal();
+		IOSignal signal = this.getSignal();
 		handler.handleDirectInputChange(signal, signal);
 	}
 
@@ -265,9 +265,9 @@ public class DirectInputBox extends AnchoredActivatableBox {
 					+ aClass);
 		}
 		ActivatorRedstone rsActivator = (ActivatorRedstone) activator;
-		FishySignSignal oldInput = this.getSignal();
+		IOSignal oldInput = this.getSignal();
 		this.updateInput(rsActivator.getChanges());
-		FishySignSignal newInput = this.getSignal();
+		IOSignal newInput = this.getSignal();
 		if (! oldInput.equals(newInput)) {
 			handler.handleDirectInputChange(oldInput, newInput);
 		}

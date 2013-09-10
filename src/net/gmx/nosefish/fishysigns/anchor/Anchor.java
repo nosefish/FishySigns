@@ -29,6 +29,14 @@ public class Anchor implements IAnchor {
 		}
 	}
 	
+	public final void raiseAnchor(IAnchorable toRaise) {
+		synchronized(lock) {
+			if (anchoredObjects.remove(toRaise)) {
+				toRaise.anchorRaised(this);
+			}
+		}
+	}
+	
 	/**
 	 * Tells all IAnchorable that this Anchor no
 	 * longer references them.
@@ -41,7 +49,7 @@ public class Anchor implements IAnchor {
 			for (IAnchorable anchoredObject : anchoredObjects) {
 				anchoredObject.anchorRaised(this);
 			}
-			this.anchoredObjects = null;
+			this.anchoredObjects.clear();
 		}
 	}
 }

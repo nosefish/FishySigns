@@ -27,7 +27,7 @@ public class LeverIOBox extends AnchoredActivatableBox {
 		 */
 		public boolean handleIOLeverRightClick (
 				String playerName,
-				FishySignSignal currentSignal,
+				IOSignal currentSignal,
 				int pinClicked);
 		
 		/**
@@ -36,7 +36,7 @@ public class LeverIOBox extends AnchoredActivatableBox {
 		 * @param oldSignal
 		 * @param newSignal
 		 */
-		public void handleIOLeverStateChanged (FishySignSignal oldSignal, FishySignSignal newSignal);
+		public void handleIOLeverStateChanged (IOSignal oldSignal, IOSignal newSignal);
 	}
 	
 	protected Object lock = new Object();
@@ -129,13 +129,13 @@ public class LeverIOBox extends AnchoredActivatableBox {
 		}
 	}
 	
-	public FishySignSignal getSignal() {
+	public IOSignal getSignal() {
 		synchronized(lock) {
-			return new FishySignSignal(physSignal);
+			return IOSignal.factory(physSignal);
 		}
 	}
 	
-	public void updateOutput(FishySignSignal signal) {
+	public void updateOutput(IOSignal signal) {
 		synchronized(lock) {
 			int lowerPinCount = Math.min(getPinCount(), signal.getNumberOfPins());
 			for (int pin = 0; pin < lowerPinCount; pin++) {
@@ -174,7 +174,7 @@ public class LeverIOBox extends AnchoredActivatableBox {
 			// not a lever, so we don't care
 			return;
 		}
-		FishySignSignal oldSignal = this.getSignal();
+		IOSignal oldSignal = this.getSignal();
 		// ask the handler if this is ok
 		boolean allowed = handler.handleIOLeverRightClick(
 				aprc.getPlayerName(), oldSignal, this.getPin(aprc.getBlockState().getLocation()));
@@ -182,7 +182,7 @@ public class LeverIOBox extends AnchoredActivatableBox {
 		if (allowed) {
 			// set new state and inform handler
 			getOutputFromWorld();
-			FishySignSignal newSignal = this.getSignal();
+			IOSignal newSignal = this.getSignal();
 			handler.handleIOLeverStateChanged(oldSignal, newSignal);
 		} else {
 			// not allowed, reset to state before click
