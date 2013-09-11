@@ -36,6 +36,12 @@ public class PatternLib {
 	/**
 	 * Predefined Pattern: integer number
 	 */
+	public static final Pattern pattern_INTEGER =
+			Pattern.compile("\\-?[0-9]+");
+	
+	/**
+	 * Predefined Pattern: positive integer number
+	 */
 	public static final Pattern pattern_POSITIVE_INTEGER =
 			Pattern.compile("[0-9]+");
 
