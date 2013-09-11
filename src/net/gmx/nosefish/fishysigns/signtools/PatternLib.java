@@ -52,4 +52,10 @@ public class PatternLib {
 	 */
 	public static final Pattern pattern_FISHY_VECTOR_INT =
 			Pattern.compile("([\\-]?[0-9]+[:,]){2}[\\-]?[0-9]+");
+	
+	/**
+	 * Predefined Pattern: a colon
+	 */
+	public static final Pattern pattern_COLON =
+			Pattern.compile(":");
 }
