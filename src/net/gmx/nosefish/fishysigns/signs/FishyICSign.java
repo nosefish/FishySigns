@@ -25,7 +25,7 @@ import net.gmx.nosefish.fishysigns.task.common.MessagePlayerTask;
 public abstract class FishyICSign
               extends RedstoneTriggeredFishySign {
 	
-	protected LeverIOBox outputBox;
+	protected volatile LeverIOBox outputBox;
 	
 
 	@Override

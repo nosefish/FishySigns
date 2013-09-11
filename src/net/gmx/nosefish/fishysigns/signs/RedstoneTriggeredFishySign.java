@@ -12,7 +12,7 @@ public abstract class RedstoneTriggeredFishySign
               extends FishySign
            implements IDirectInputHandler {
 	
-	protected DirectInputBox inputBox;
+	protected volatile DirectInputBox inputBox;
 
 	@Override
 	public void initialize() {
