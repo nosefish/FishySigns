@@ -1,13 +1,13 @@
 package net.gmx.nosefish.fishysigns.watcher.activator;
 
 public class ActivatorServerTick implements IActivator {
-	private final int tick;
+	private final long tick;
 	
-	public ActivatorServerTick(int tick) {
+	public ActivatorServerTick(long tick) {
 		this.tick = tick;
 	}
 	
-	public int getTick() {
+	public long getTick() {
 		return tick;
 	}
 }

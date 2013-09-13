@@ -6,8 +6,10 @@ import net.canarymod.api.world.blocks.BlockType;
 import net.gmx.nosefish.fishylib.blocks.BlockInfo;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.gmx.nosefish.fishysigns.anchor.IAnchor;
+import net.gmx.nosefish.fishysigns.exception.DisabledException;
 import net.gmx.nosefish.fishysigns.exception.UnsupportedActivatorException;
-import net.gmx.nosefish.fishysigns.task.common.OutputLever;
+import net.gmx.nosefish.fishysigns.plugin.engine.ServerTicker;
+import net.gmx.nosefish.fishysigns.task.common.SetLeverTask;
 import net.gmx.nosefish.fishysigns.watcher.PlayerRightClickWatcher;
 import net.gmx.nosefish.fishysigns.watcher.activator.ActivatorPlayerRightClick;
 import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
@@ -135,31 +137,70 @@ public class LeverIOBox extends AnchoredActivatableBox {
 		}
 	}
 	
-	public void updateOutput(IOSignal signal) {
+	
+	//-------------------------------------------------------------------------------------
+	
+	public void updateOutputNow(IOSignal signal) {
+		long now = 0;
+		try {
+			now = ServerTicker.getInstance().getTickCount();
+		} catch (DisabledException e) {
+			// 0 will work, too
+		}
+		this.updateOutputOnTick(signal, now);
+	}
+
+	public void updateOutputOnTick(IOSignal signal, long targetTick) {
 		synchronized(lock) {
 			int lowerPinCount = Math.min(getPinCount(), signal.getNumberOfPins());
 			for (int pin = 0; pin < lowerPinCount; pin++) {
-				physSignal[pin] = signal.getState(pin);
+				if (physSignal[pin] != signal.getState(pin)) {
+					physSignal[pin] = signal.getState(pin);
+					SetLeverTask setLever = new SetLeverTask(physOutput.get(pin), physSignal[pin], targetTick);
+					setLever.submit();
+				}
 			}
-			refreshOutput();
+			//refreshOutput();
 		}
 	}
 	
-	public void toggleOutput(int pin) {
+
+	public void toggleOutputNow(int pin) {
+		long now = 0;
+		try {
+			now = ServerTicker.getInstance().getTickCount();
+		} catch (DisabledException e) {
+			// 0 will work, too
+		}
+		toggleOutputOnTick(pin, now);
+	}
+
+	public void toggleOutputOnTick(int pin, long targetTick) {
 		synchronized(lock) {
 			this.physSignal[pin] = ! physSignal[pin];
-			refreshOutput();
+			SetLeverTask setLever = new SetLeverTask(physOutput.get(pin), physSignal[pin], targetTick);
+			setLever.submit();
 		}
 	}
 	
 	public void refreshOutput() {
+		long now = 0;
+		try {
+			now = ServerTicker.getInstance().getTickCount();
+		} catch (DisabledException e) {
+			// 0 will work, too, but it doesn't matter, the plugin is shutting down
+		}
 		synchronized(lock) {
 			for (int pin = 0; pin < getPinCount(); ++pin) {
-				OutputLever.set(physOutput.get(pin), physSignal[pin]);
+				SetLeverTask setLever = new SetLeverTask(physOutput.get(pin), physSignal[pin], now);
+				setLever.submit();
 			}
 		}
 	}
-
+	
+	//------------------------------------------------------------------------
+	// used by the engine
+	//------------------------------------------------------------------------
 	@Override
 	public void activate(IActivator activator) {
 		if (! ActivatorPlayerRightClick.class.equals(activator.getClass())) {
@@ -189,7 +230,7 @@ public class LeverIOBox extends AnchoredActivatableBox {
 			refreshOutput();
 		}
 	}
-
+	
 	@Override
 	public void remove() {
 		PlayerRightClickWatcher.getInstance().remove(this.getID());

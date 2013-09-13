@@ -6,14 +6,16 @@ import net.gmx.nosefish.fishysigns.world.FishyLocationBlockState;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 
 public class FishyRedstoneChange {
-	FishyLocationBlockState blockState;
-	int oldLevel;
-	int newLevel;
+	protected final FishyLocationBlockState blockState;
+	protected final int oldLevel;
+	protected final int newLevel;
+	protected final long tickStamp;
 	
-	public FishyRedstoneChange(Block block, int oldLevel, int newLevel) {
+	public FishyRedstoneChange(Block block, int oldLevel, int newLevel, long tickStamp) {
 		this.blockState = new FishyLocationBlockState(block);
 		this.oldLevel = oldLevel;
 		this.newLevel = newLevel;
+		this.tickStamp = tickStamp;
 	}
 	
 	public FishyLocationInt getLocation() {
@@ -55,5 +57,9 @@ public class FishyRedstoneChange {
 		if (isLowToHigh()) return true;
 		if (isHighToLow()) return false;
 		return null;
+	}
+	
+	public long getTick() {
+		return tickStamp;
 	}
 }

@@ -30,7 +30,7 @@ public abstract class FishyICSign
 
 	@Override
 	public void initialize() {
-		initializeRSInputBox();
+		initializeDirectInputBox();
 		initializeOutputBox();
 	}
 	
@@ -45,15 +45,14 @@ public abstract class FishyICSign
 	}
 	
 	/**
-	 * Updates the output with the new signal.
+	 * Gets the output box
 	 * 
-	 * @param newSignal
+	 * @return
+	 *     the output box
 	 */
-	protected void updateOutput(IOSignal newSignal) {
-		this.outputBox.updateOutput(newSignal);
+	protected LeverIOBox getOutputBox() {
+		return outputBox;
 	}
-	
-
 	
 	/**
 	 * Gets location for an output behind the sign,

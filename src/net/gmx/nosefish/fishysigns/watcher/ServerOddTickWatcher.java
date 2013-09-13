@@ -6,12 +6,13 @@ import java.util.Map;
 import java.util.Set;
 
 
-import net.canarymod.Canary;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.system.ServerTickHook;
 import net.canarymod.plugin.Priority;
+import net.gmx.nosefish.fishysigns.exception.DisabledException;
 import net.gmx.nosefish.fishysigns.plugin.FishySigns;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
+import net.gmx.nosefish.fishysigns.plugin.engine.ServerTicker;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 import net.gmx.nosefish.fishysigns.watcher.activator.ActivatorServerTick;
 import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
@@ -53,7 +54,13 @@ public class ServerOddTickWatcher implements IFishyWatcher{
 		if (! enabled) {
 			return;
 		}
-		int tick = Canary.getServer().getCurrentTick();
+		long tick;
+		try {
+			tick = ServerTicker.getInstance().getTickCount();
+		} catch (DisabledException e) {
+			// plugin is being disabled
+			return;
+		}
 		if ((tick & 1) == 0) {
 			return;
 		}
@@ -67,9 +74,9 @@ public class ServerOddTickWatcher implements IFishyWatcher{
 	 *
 	 */
 	private class ActivationTask extends FishyTask {
-		int tick;
+		long tick;
 		
-		public ActivationTask(int tick) {
+		public ActivationTask(long tick) {
 			this.tick = tick;
 			this.setThreadsafe_IPromiseThatThisDoesNotTouchTheWorld();
 		}

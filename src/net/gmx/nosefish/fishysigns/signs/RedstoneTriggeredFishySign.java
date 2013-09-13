@@ -16,19 +16,23 @@ public abstract class RedstoneTriggeredFishySign
 
 	@Override
 	public void initialize() {
-		this.initializeRSInputBox();
+		this.initializeDirectInputBox();
 	}
 
 	/**
 	 * Called in <code>initialize</code>. Override to your liking.
 	 * Default wires all blocks next to the sign to a single input pin.
 	 */
-	protected void initializeRSInputBox() {
+	protected void initializeDirectInputBox() {
 		FishyLocationInt[] inputLocations = this.getInputLocations();
 		inputBox = DirectInputBox.createAndRegister(this.location, inputLocations.length, 1, this);
 		inputBox.setAllInputPins(inputLocations);
 		inputBox.wireAllToPin0();
 		inputBox.finishInit();
+	}
+	
+	protected DirectInputBox getDirectInputBox() {
+		return inputBox;
 	}
 	
 	/**

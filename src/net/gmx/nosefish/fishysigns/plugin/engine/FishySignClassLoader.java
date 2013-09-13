@@ -21,7 +21,7 @@ import net.gmx.nosefish.fishysigns.Log;
 import net.gmx.nosefish.fishysigns.annotation.FishySignIdentifier;
 import net.gmx.nosefish.fishysigns.signs.FishySign;
 
-
+// TODO: allow other plugins to register classes
 public final class FishySignClassLoader {
 	private static FishySignClassLoader instance = new FishySignClassLoader();
 	private static String FISHYSIGNDIR = "plugins/fishysigns";

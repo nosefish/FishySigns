@@ -11,7 +11,13 @@ import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
 public class ServerOddTickInputBox extends AnchoredActivatableBox {
 
 	public static interface IServerOddTickHandler extends IAnchor {
-		public void handleServerOddTick(int tickNumber);
+		/**
+		 * 
+		 * @param tickNumber
+		 *     the number of ticks as reported by the ServerTicker, different from
+		 *     Canary's tick count.
+		 */ 
+		public void handleServerOddTick(long tickNumber);
 	}
 	
 	private final IServerOddTickHandler handler;

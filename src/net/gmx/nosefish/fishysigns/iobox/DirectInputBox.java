@@ -41,7 +41,7 @@ import net.gmx.nosefish.fishysigns.world.Unsafe;
  */
 public class DirectInputBox extends AnchoredActivatableBox {
 	public static interface IDirectInputHandler extends IAnchor{
-		public void handleDirectInputChange(IOSignal oldInput, IOSignal newInput);
+		public void handleDirectInputChange(IOSignal oldInput, IOSignal newInput, long tickStamp);
 	}
 	
 	protected FishyLocationInt boxLocation;
@@ -53,6 +53,7 @@ public class DirectInputBox extends AnchoredActivatableBox {
 	// physical side
 	protected final ArrayList<FishyLocationInt> physInput;
 	protected final boolean[] physSignal;
+	protected long tickStamp; // tick of the last update
 
 	// wiring
 	protected final Map<Integer, Integer> phys2sign;
@@ -171,14 +172,28 @@ public class DirectInputBox extends AnchoredActivatableBox {
 		}
 	}
 	
+	/**
+	 * Gets the tick of the last change
+	 * 
+	 * @return
+	 *     the tick number
+	 */
+	public long getTickStamp() {
+		synchronized (lock) {
+			return tickStamp;
+		}
+	}
 	
-	public void updateInput(List<FishyRedstoneChange> rsChanges) {
+	
+	protected void updateInput(List<FishyRedstoneChange> rsChanges) {
+		long tick = 0;
 		synchronized(lock) {
 			for (int pin = 0; pin < getPhysicalPinCount(); ++pin) {
 				// Assumption: only one change per input block per Activator
 				for (FishyRedstoneChange change : rsChanges) {
 					FishyLocationInt changeLocation = change.getLocation();
 					if (physInput.get(pin).equals(changeLocation)){
+						tick = change.getTick();
 						short id = change.getBlockState().getTypeId();
 						short data = change.getBlockState().getData();
 						if (Unsafe.unsafeGetDirectInput(changeLocation, id, data, boxLocation)) {
@@ -191,6 +206,7 @@ public class DirectInputBox extends AnchoredActivatableBox {
 					}
 				}
 			}
+			tickStamp = tick;
 			refreshSignSignal();
 		}
 	}
@@ -247,7 +263,7 @@ public class DirectInputBox extends AnchoredActivatableBox {
 	 */
 	public void refreshHandler() {
 		IOSignal signal = this.getSignal();
-		handler.handleDirectInputChange(signal, signal);
+		handler.handleDirectInputChange(signal, signal, tickStamp);
 	}
 
 	@Override
@@ -269,7 +285,7 @@ public class DirectInputBox extends AnchoredActivatableBox {
 		this.updateInput(rsActivator.getChanges());
 		IOSignal newInput = this.getSignal();
 		if (! oldInput.equals(newInput)) {
-			handler.handleDirectInputChange(oldInput, newInput);
+			handler.handleDirectInputChange(oldInput, newInput, tickStamp);
 		}
 	}
 

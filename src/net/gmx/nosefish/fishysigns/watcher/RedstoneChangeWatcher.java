@@ -11,8 +11,11 @@ import net.canarymod.api.world.blocks.Block;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.world.RedstoneChangeHook;
 import net.canarymod.plugin.Priority;
+import net.gmx.nosefish.fishysigns.Log;
+import net.gmx.nosefish.fishysigns.exception.DisabledException;
 import net.gmx.nosefish.fishysigns.plugin.FishySigns;
 import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
+import net.gmx.nosefish.fishysigns.plugin.engine.ServerTicker;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 import net.gmx.nosefish.fishysigns.watcher.activator.ActivatorRedstone;
 import net.gmx.nosefish.fishysigns.watcher.activator.FishyRedstoneChange;
@@ -54,9 +57,16 @@ public class RedstoneChangeWatcher extends BlockLocationWatcher{
 		Block block = hook.getSourceBlock();
 		int oldLevel = hook.getOldLevel();
 		int newLevel = hook.getNewLevel();
+		long tickStamp;
+		try {
+			tickStamp = ServerTicker.getInstance().getTickCount();
+		} catch (DisabledException e) {
+			Log.get().logWarning("RedstoneChangeWatcher: the ServerTicker is disabled, ignoring hook call");
+			return;
+		}
 		if ((oldLevel == 0) != (newLevel == 0) // high/low change, boolean != is XOR
 			&& this.blockLocationIndex.containsKey(new FishyLocationInt(block.getLocation()))) {
-			this.rsChangeCollector.add(new FishyRedstoneChange(block, oldLevel, newLevel));
+			this.rsChangeCollector.add(new FishyRedstoneChange(block, oldLevel, newLevel, tickStamp));
 		}
 	}
 	
