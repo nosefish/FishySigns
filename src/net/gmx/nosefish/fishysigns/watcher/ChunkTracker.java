@@ -30,7 +30,7 @@ import net.canarymod.plugin.Priority;
  * @author Stefan Steinheimer (nosefish)
  *
  */
-public class ChunkTracker extends BlockLocationWatcher {
+public final class ChunkTracker extends BlockLocationWatcher {
 	private static ChunkTracker instance = new ChunkTracker();
 	static{
 		FishySigns.addWatcher(instance);
@@ -94,7 +94,8 @@ public class ChunkTracker extends BlockLocationWatcher {
 
 	/**
 	 * Adds a chunk to the tracker.
-	 * Called by the FishyEngineListener. Do not call from anywhere else.
+	 * Called by the FishySigns plugin class and the onChunkLoaded method.
+	 * Do not call from anywhere else.
 	 * 
 	 * @param chunk the chunk to add.
 	 * @return the chunks in the cluster that are now in a completely loaded cluster 
@@ -139,7 +140,7 @@ public class ChunkTracker extends BlockLocationWatcher {
 	 * @param chunk the chunk to remove.
 	 * @return Set of chunks that were surrounded by loaded chunks before and no longer are
 	 */
-	public Set<FishyChunk> removeChunk(Chunk chunk) {
+	private Set<FishyChunk> removeChunk(Chunk chunk) {
 		Set<FishyChunk> unloadedClusters = new HashSet<FishyChunk>(10, 0.9F);
 		FishyChunk removedChunk = new FishyChunk(chunk);
 		Boolean wasInCluster = loadedChunks.get(removedChunk);

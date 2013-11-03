@@ -2,6 +2,7 @@ package net.gmx.nosefish.fishysigns.task.common;
 
 import net.canarymod.api.world.World;
 import net.gmx.nosefish.fishylib.worldmath.CircleRunner;
+import net.gmx.nosefish.fishylib.worldmath.FishyChunk;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.gmx.nosefish.fishylib.worldmath.CircleRunner.IRunnableXY;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
@@ -27,12 +28,19 @@ public class CircleLightningTask extends FishyTask implements IRunnableXY {
 		if (radius == 0) {
 			if (chance == 1.0 || Math.random() <= chance) {
 				World world = target.getWorld().getWorldIfLoaded();
-				if (world != null) {
-					world.makeLightningBolt(
-							target.getIntX(),
-							target.getIntY(),
-							target.getIntZ());
+				if (world == null) {
+					return;
 				}
+				if (! world.isChunkLoaded(
+						FishyChunk.worldToChunk(target.getIntX()), 
+						FishyChunk.worldToChunk(target.getIntZ()))) {
+					return;
+				}
+				world.makeLightningBolt(
+						target.getIntX(),
+						target.getIntY(),
+						target.getIntZ());
+				
 			}
 		} else {
 			CircleRunner.runOnCircle(target.getIntX(), target.getIntZ(), radius, fill, this);

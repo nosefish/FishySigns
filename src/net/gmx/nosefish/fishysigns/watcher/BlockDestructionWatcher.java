@@ -2,7 +2,6 @@ package net.gmx.nosefish.fishysigns.watcher;
 
 import java.util.Set;
 
-import net.canarymod.api.world.blocks.BlockType;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.world.BlockUpdateHook;
 import net.canarymod.plugin.Priority;
@@ -30,7 +29,7 @@ public class BlockDestructionWatcher extends BlockLocationWatcher {
 		if (! enabled) {
 			return;
 		}
-		if (hook.getNewBlockId() != BlockType.Air.getId()) {
+		if (hook.getNewBlockId() == hook.getBlock().getTypeId()) {
 			// nothing was destroyed
 			return;
 		}

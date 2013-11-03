@@ -1,6 +1,6 @@
 package net.gmx.nosefish.fishysigns.watcher;
 
-import net.gmx.nosefish.fishylib.datastructures.ConcurrentMapWithTreeSet;
+import net.gmx.nosefish.fishylib.datastructures.ConcurrentMapWithSet;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 
 public abstract class BlockLocationWatcher implements IFishyWatcher{
@@ -10,8 +10,8 @@ public abstract class BlockLocationWatcher implements IFishyWatcher{
 	 * The set is a <code>Collections.synchronizedSet</code>.
 	 * When iterating over it, you must synchronize on it!
 	 */
-	protected final ConcurrentMapWithTreeSet<FishyLocationInt, Long> blockLocationIndex =
-			new ConcurrentMapWithTreeSet<FishyLocationInt, Long>();
+	protected final ConcurrentMapWithSet<FishyLocationInt, Long> blockLocationIndex =
+			new ConcurrentMapWithSet<FishyLocationInt, Long>();
 
 	/**
 	 * Registers an <code>Activatable</code> with a block location
@@ -35,6 +35,7 @@ public abstract class BlockLocationWatcher implements IFishyWatcher{
 	public void remove(Long activatableID) {
 		blockLocationIndex.removeValue(activatableID);
 	}
+	
 	
 	@Override
 	public void enable() {

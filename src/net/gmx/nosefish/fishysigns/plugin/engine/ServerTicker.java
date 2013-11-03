@@ -21,31 +21,7 @@ public class ServerTicker implements PluginListener {
 		return instance;
 	}
 	
-	/**
-	 * Makes the caller block until the server ticks.
-	 * DO NOT CALL FROM THE SERVER THREAD!
-	 * 
-	 * @throws DisabledException if the <code>ServerTicker</code> is not running
-	 */
-	public void awaitTick() throws DisabledException{
-		if (shutdown) {
-			throw new DisabledException("FishySigns has been disabled, the ServerTicker was shut down.");
-		}
-		long lastTick = tickCount;
-		try {
-			synchronized(instance) {
-				while (tickCount == lastTick) {
-					instance.wait();
-					if (shutdown) {
-						// notifyAll might have been called by shutdown() instead of tick().
-						throw new DisabledException("FishySigns has been disabled and the ServerTicker was shut down.");
-					}
-				}
-			}
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-	}
+
 
 	/**
 	 * Gets the current tick count
@@ -54,12 +30,10 @@ public class ServerTicker implements PluginListener {
 	 * @throws DisabledException if the <code>ServerTicker</code> is not running
 	 */
 	public long getTickCount() throws DisabledException {
-		synchronized(instance) {
 			if (shutdown) {
 				throw new DisabledException("FishySigns has been disabled and the ServerTicker was shut down.");
 			}
 			return tickCount;
-		}
 	}
 	
 	/**
@@ -68,9 +42,6 @@ public class ServerTicker implements PluginListener {
 	 */
 	public void shutdown() {
 		this.shutdown = true;
-		synchronized(instance) {
-			instance.notifyAll();
-		}
 	}
 	
 	/**
@@ -85,11 +56,23 @@ public class ServerTicker implements PluginListener {
 	 * Called by the FishyEngineListener when the server ticks. Do not call yourself!
 	 */
 	public void tick() {
-		synchronized (instance) {
-			++tickCount;
-			instance.notifyAll();
+		if (tickCount == Long.MAX_VALUE) {
+			throw new OverflowException("The tick counter has reached Long.MAX_VALUE. Time to restart the server. How did you keep it up for such a long time?");
 		}
+		++tickCount;
 	}
 	
+	public static class OverflowException extends RuntimeException {
+
+		public OverflowException() {
+			super();
+		}
+
+		public OverflowException(String message) {
+			super(message);
+		}
+
+		private static final long serialVersionUID = -8510961058618323899L;
+	}
 
 }

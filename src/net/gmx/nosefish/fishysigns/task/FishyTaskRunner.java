@@ -317,7 +317,6 @@ public class FishyTaskRunner {
 			} else {
 				task.run();
 			}
-
 		}
 	} // end of internal class
 

@@ -1,5 +1,6 @@
 package net.gmx.nosefish.fishysigns.plugin.engine;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -100,23 +101,32 @@ public final class ActivationManager implements IFishyWatcher{
 	
 
 	
-		public void remove(Long id) {
-			if (! enabled) {
-				return;
-			}
-			IActivatable toRemove = null;
-			indexWriteLock.lock();
-			try {
-				toRemove = idIndex.get(id);
-				idIndex.remove(id);
-			} finally {
-				indexWriteLock.unlock();
-			}
-			if (toRemove != null) {
-				toRemove.remove();
-			}
+	public void remove(Long id) {
+		if (! enabled) {
+			return;
 		}
-	
+		IActivatable toRemove = null;
+		indexWriteLock.lock();
+		try {
+			toRemove = idIndex.get(id);
+			idIndex.remove(id);
+		} finally {
+			indexWriteLock.unlock();
+		}
+		if (toRemove != null) {
+			toRemove.remove();
+		}
+	}
+
+	public void activateAll(IActivator activator, Collection<Long> toActivate) {
+		if (! enabled) {
+			return;
+		}
+		for (Long id : toActivate) {
+			activate(id, activator);
+		}
+	}
+		
 	/**
 	 * Activates all registered <code>Activatables</code> represented by the ids in the list
 	 * with the same <code>Activator</code>.
@@ -189,4 +199,6 @@ public final class ActivationManager implements IFishyWatcher{
 			indexWriteLock.unlock();
 		}
 	}
+
+
 }

@@ -3,6 +3,7 @@ package net.gmx.nosefish.fishysigns.task.common;
 import net.canarymod.api.world.World;
 import net.canarymod.api.world.blocks.Sign;
 import net.canarymod.api.world.blocks.TileEntity;
+import net.gmx.nosefish.fishylib.worldmath.FishyChunk;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 
@@ -46,6 +47,11 @@ public class ChangeSignTextTask extends FishyTask {
 	public void doStuff() {
 		World world = signLoc.getWorld().getWorldIfLoaded();
 		if (world == null) {
+			return;
+		}
+		if (! world.isChunkLoaded(
+				FishyChunk.worldToChunk(signLoc.getIntX()), 
+				FishyChunk.worldToChunk(signLoc.getIntZ()))) {
 			return;
 		}
 		TileEntity te = world.getOnlyTileEntityAt(signLoc.getIntX(), signLoc.getIntY(), signLoc.getIntZ());
