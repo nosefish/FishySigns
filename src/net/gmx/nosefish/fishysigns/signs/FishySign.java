@@ -48,7 +48,10 @@ public abstract class FishySign extends Anchor implements IAnchorable {
 		FishySign fishySign = FishySignClassLoader.getInstance().makeFishySign(new UnloadedSign(sign));
 		if (fishySign != null) {
 			if (fishySign.validateOnCreate(player.getName())) {
-				Log.get().logInfo(player.getName() + " has created a " + fishySign.getClass().getSimpleName());
+				Log.get().logInfo(player.getName() 
+                                  + " has created a " 
+                                  + fishySign.getClass().getSimpleName()
+                                  + " at " + fishySign.getLocation());
 				anchorSign(fishySign);
 				startInitTask(fishySign);
 			}
@@ -92,7 +95,6 @@ public abstract class FishySign extends Anchor implements IAnchorable {
 		blockAnchor.anchor(fishySign);
 	}
 
-	// everything in this list will be destroyed when the Anchor is raised.
 	
 	/**
 	 * Called when a sign is loaded that matches the <code>@FishySignIdentifier</code> regex.
@@ -205,7 +207,7 @@ public abstract class FishySign extends Anchor implements IAnchorable {
 
 	@Override
 	public void anchorRaised(Anchor anchor) {
-		this.raiseAnchor();
+        this.raiseAnchor();
 		this.onUnload();
 	}
 	

@@ -10,7 +10,7 @@ import net.gmx.nosefish.fishysigns.watcher.activator.IActivatable;
 
 public abstract class AnchoredActivatableBox implements IAnchorable, IActivatable{
 	private volatile Long id = IActivatable.ID_UNINITIALIZED;
-	private AtomicBoolean anchorIsRaised = new AtomicBoolean(false);
+	private final AtomicBoolean anchorIsRaised = new AtomicBoolean(false);
 
 	
 	
@@ -48,6 +48,8 @@ public abstract class AnchoredActivatableBox implements IAnchorable, IActivatabl
 	
 	/**
 	 * Do not call in constructor!
+     * @param box
+     * @param anchor
 	 */
 	protected static void registerWithActivationManagerAndAnchor(AnchoredActivatableBox box, IAnchor anchor) {
 		ActivationManager.getInstance().register(box);

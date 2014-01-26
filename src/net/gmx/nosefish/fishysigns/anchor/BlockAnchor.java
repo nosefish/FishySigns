@@ -15,7 +15,7 @@ import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
  */
 public class BlockAnchor extends Anchor implements IActivatable {
 	private volatile Long id = IActivatable.ID_UNINITIALIZED;
-	private final FishyLocationInt boxLocation;
+	private final FishyLocationInt blockLocation;
 
 	public static BlockAnchor createAndRegister(FishyLocationInt blockLocation) {
 		BlockAnchor ba = new BlockAnchor(blockLocation);
@@ -24,7 +24,7 @@ public class BlockAnchor extends Anchor implements IActivatable {
 	}
 	
 	private BlockAnchor(FishyLocationInt blockLocation) {
-		this.boxLocation = blockLocation;
+		this.blockLocation = blockLocation;
 	}
 		
 	@Override
@@ -41,20 +41,20 @@ public class BlockAnchor extends Anchor implements IActivatable {
 
 	@Override
 	public void initialize() {
-		ChunkTracker.getInstance().register(id, boxLocation);
-		BlockDestructionWatcher.getInstance().register(id, boxLocation);
+		ChunkTracker.getInstance().register(id, blockLocation);
+		BlockDestructionWatcher.getInstance().register(id, blockLocation);
 	}
 
 	@Override
 	public void activate(IActivator activator) {
 		// Whatever is in that activator, it can only mean one thing.
-		ActivationManager.getInstance().remove(getID());
+		ActivationManager.getInstance().remove(id);
 	}
 
 	@Override
 	public void remove() {
-		ChunkTracker.getInstance().remove(getID());
-		BlockDestructionWatcher.getInstance().remove(getID());
+		ChunkTracker.getInstance().remove(id);
+		BlockDestructionWatcher.getInstance().remove(id);
 		this.raiseAnchor();
 	}
 }

@@ -10,7 +10,6 @@ import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.gmx.nosefish.fishysigns.anchor.IAnchor;
 import net.gmx.nosefish.fishysigns.watcher.InventoryBlockWatcher;
 import net.gmx.nosefish.fishysigns.watcher.InventoryBlockWatcher.ActivatorInventoryBlock;
-import net.gmx.nosefish.fishysigns.watcher.InventoryBlockWatcher.Type;
 import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
 
 public class ChestAccessBox extends AnchoredActivatableBox {

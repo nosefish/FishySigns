@@ -64,13 +64,13 @@ public class DirectInputBox extends AnchoredActivatableBox {
 	// handler
 	protected final IDirectInputHandler handler;
 	
-	public static DirectInputBox createAndRegister(FishyLocationInt inputBoxLocation,
+	public static DirectInputBox createAndRegister(
+            FishyLocationInt inputBoxLocation,
             int physicalPinCount, 
             int signPinCount,
             IDirectInputHandler handler) {
 		DirectInputBox box = new DirectInputBox(inputBoxLocation, physicalPinCount, signPinCount, handler);
 		registerWithActivationManagerAndAnchor(box, handler);
-		handler.anchor(box);
 		return box;
 	}
 	
