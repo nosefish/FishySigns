@@ -42,18 +42,18 @@ public final class FishySignClassLoader {
 		signTypes.clear();
 		File signDir = new File(FISHYSIGNDIR);
 		if (!signDir.exists()) {
-			Log.get().logSevere(
+			Log.get().warn(
 					"No FishySigns found. '" + FISHYSIGNDIR
 							+ "' is not a directory. Creating...");
 			signDir.mkdir();
 			return;
 		} else if (!signDir.isDirectory()) {
-			Log.get().logSevere(
+			Log.get().warn(
 					"No FishySigns found. '" + FISHYSIGNDIR
 							+ "' is not a directory but a file.");
 			return;
 		}
-		Log.get().logInfo("Loading FishySign classes from jars in " + signDir.getAbsolutePath().toString());
+		Log.get().info("Loading FishySign classes from jars in " + signDir.getAbsolutePath().toString());
 		FilenameFilter onlyJarFiles = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return name.toLowerCase().endsWith(".jar");
@@ -91,9 +91,9 @@ public final class FishySignClassLoader {
 						if (regEx != null) {
 							signTypes.put(regEx,
 									loadedClass.asSubclass(FishySign.class));
-							Log.get().logInfo("Loaded FishySign class " + className);
+							Log.get().info("Loaded FishySign class " + className);
 						} else if (! Modifier.isAbstract(loadedClass.getModifiers())) {
-							Log.get().logWarning(
+							Log.get().warn(
 									"Could not load FishySign class " + className
 									+ " - no @FishySignIdentifier found.");
 						}
@@ -101,11 +101,11 @@ public final class FishySignClassLoader {
 						// not subclass of FishySign.
 					}
 				} catch (ClassNotFoundException cnf) {
-					Log.get().logStacktrace("Could not load class from jar", cnf);
+					Log.get().trace("Could not load class from jar", cnf);
 				}
 			}
 		} catch (IOException e) {
-			Log.get().logStacktrace("Could not load class from jar", e);
+			Log.get().trace("Could not load class from jar", e);
 		}
 	}
 
@@ -124,10 +124,10 @@ public final class FishySignClassLoader {
 						return new SignRegEx((Pattern[]) value);
 					}
 				} catch (IllegalArgumentException e) {
-					Log.get().logStacktrace(
+					Log.get().trace(
 							"Exception while loading FishySignIdentifier", e);
 				} catch (IllegalAccessException e) {
-					Log.get().logStacktrace(
+					Log.get().trace(
 							"Exception while loading FishySignIdentifier", e);
 				}
 			}
@@ -166,17 +166,17 @@ public final class FishySignClassLoader {
 				Constructor<? extends FishySign> signConstructor = signClass.getConstructor(UnloadedSign.class); 
 				fishySign = signConstructor.newInstance(sign);
 			} catch (InstantiationException e) {
-				Log.get().logStacktrace("Failed to instantiate FishySign", e);
+				Log.get().trace("Failed to instantiate FishySign", e);
 			} catch (IllegalAccessException e) {
-				Log.get().logStacktrace("Failed to instantiate FishySign", e);
+				Log.get().trace("Failed to instantiate FishySign", e);
 			} catch (IllegalArgumentException e) {
-				Log.get().logStacktrace("Failed to instantiate FishySign", e);
+				Log.get().trace("Failed to instantiate FishySign", e);
 			} catch (SecurityException e) {
-				Log.get().logStacktrace("Failed to instantiate FishySign", e);
+				Log.get().trace("Failed to instantiate FishySign", e);
 			} catch (InvocationTargetException e) {
-				Log.get().logStacktrace("Failed to instantiate FishySign", e);
+				Log.get().trace("Failed to instantiate FishySign", e);
 			} catch (NoSuchMethodException e) {
-				Log.get().logStacktrace("Failed to instantiate FishySign", e);
+				Log.get().trace("Failed to instantiate FishySign", e);
 			}
 		}
 		return fishySign;

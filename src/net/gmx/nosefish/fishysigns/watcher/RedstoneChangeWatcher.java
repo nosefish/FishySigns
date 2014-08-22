@@ -61,7 +61,7 @@ public class RedstoneChangeWatcher extends BlockLocationWatcher{
 		try {
 			tickStamp = ServerTicker.getInstance().getTickCount();
 		} catch (DisabledException e) {
-			Log.get().logWarning("RedstoneChangeWatcher: the ServerTicker is disabled, ignoring hook call");
+			Log.get().warn("RedstoneChangeWatcher: the ServerTicker is disabled, ignoring hook call");
 			return;
 		}
 		if ((oldLevel == 0) != (newLevel == 0) // high/low change, boolean != is XOR

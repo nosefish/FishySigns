@@ -52,7 +52,7 @@ public class FishySigns extends Plugin implements TaskOwner{
 		disableWatchers();
 		FishyTaskManager.getInstance().shutdown();
 		ServerTicker.getInstance().shutdown();
-		ServerTaskManager.removeTasksForPlugin(this);
+		ServerTaskManager.removeTasks(this);
 	}
 	
 	/**
@@ -63,11 +63,11 @@ public class FishySigns extends Plugin implements TaskOwner{
 	 * @param watcher
 	 */
 	public static void addWatcher(IFishyWatcher watcher) {
-		Log.get().logInfo("adding Watcher: " + watcher.getClass().getSimpleName());
+		Log.get().info("adding Watcher: " + watcher.getClass().getSimpleName());
 		watchers.add(watcher);
 		if (instance.get() != null) {
 			watcher.enable();
-			Log.get().logInfo("registering Listener: " + watcher.getClass().getSimpleName());
+			Log.get().info("registering Listener: " + watcher.getClass().getSimpleName());
 			Canary.hooks().registerListener(watcher, instance.get());
 		}
 	}

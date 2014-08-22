@@ -65,7 +65,7 @@ public class RadioAntennaInputBox<T> extends AnchoredActivatableBox {
 				signal = (T)object;
 			}
 			else {
-				Log.get().logWarning("Incompatible radio message! expected "
+				Log.get().warn("Incompatible radio message! expected "
 						+ signalType.getSimpleName()
 						+ " but received "
 						+ object.getClass().getSimpleName());

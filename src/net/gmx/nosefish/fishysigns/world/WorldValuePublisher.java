@@ -28,7 +28,7 @@ public final class WorldValuePublisher {
 		} catch (DisabledException e) {
 			// If it's disabled, the world values we're going to read won't matter anyway.
 			// Let's log it for now to see how frequently this happens on plugin shutdown.
-			Log.get().logStacktrace("WorldValuePublisher: The ServerTicker is disabled. ", e);
+			Log.get().trace("WorldValuePublisher: The ServerTicker is disabled. ", e);
 		}
 	}
 }

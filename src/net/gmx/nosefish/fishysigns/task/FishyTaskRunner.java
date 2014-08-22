@@ -102,12 +102,12 @@ public class FishyTaskRunner {
 			workerPool.awaitTermination(1, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			Log.get().logWarning("FishyTaskRunner was interrupted while waiting for the thread pool to shut down!");
+			Log.get().warn("FishyTaskRunner was interrupted while waiting for the thread pool to shut down!");
 		} finally {
 			queuePool.shutdownNow();
 			workerPool.shutdownNow();
 		}
-		Log.get().logInfo("The FishyTaskRunner has been shut down.");
+		Log.get().info("The FishyTaskRunner has been shut down.");
 	}
 	
 
@@ -139,7 +139,7 @@ public class FishyTaskRunner {
 	 */
 	private static class ShutdownTask extends FishyTask {
 		public void doStuff() {
-			Log.get().logWarning("The ShutdownTask is being executed. This should not happen. Please file a bug report.");
+			Log.get().warn("The ShutdownTask is being executed. This should not happen. Please file a bug report.");
 		}
 	} // end of internal class
 	
@@ -182,7 +182,7 @@ public class FishyTaskRunner {
 				}
 			} finally {
 				cleanup();
-				Log.get().logInfo("FishyTaskSorter has been shut down.");
+				Log.get().info("FishyTaskSorter has been shut down.");
 			}
 		}
 		
@@ -229,7 +229,7 @@ public class FishyTaskRunner {
 			final Set<FishyTaskProperties> taskProperties = task.getTaskProperties();
 			if (taskProperties == null) {
 				task.cancel();
-				Log.get().logWarning("FishyTaskRunner canceled a task with null properties: " + task);
+				Log.get().warn("FishyTaskRunner canceled a task with null properties: " + task);
 				return;
 			}
 			// get all delay types

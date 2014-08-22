@@ -23,7 +23,7 @@ public class SetLeverTask extends FishyTask {
 			delay = targetTick - ServerTicker.getInstance().getTickCount();
 		} catch (DisabledException e) {
 			// Let's see if this ever happens.
-			Log.get().logWarning("SetLeverTask: the ServerTicker is disabled.");
+			Log.get().warn("SetLeverTask: the ServerTicker is disabled.");
 		}
 		this.setTickDelay(delay);
 	}

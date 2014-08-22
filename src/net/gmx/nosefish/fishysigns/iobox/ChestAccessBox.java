@@ -53,6 +53,7 @@ public class ChestAccessBox extends AnchoredActivatableBox {
 	 * @param item
 	 */
 	public void storeItem(Item item) {
+        //TODO: return shoud indicate success / number of items left
 		if (chestType == ChestType.NONE) {
 			return;
 		}
@@ -86,6 +87,7 @@ public class ChestAccessBox extends AnchoredActivatableBox {
 	 * @return
 	 */
 	public Item fetchItem(Item item) {
+        //TODO: implement
 		return null;
 	}
 

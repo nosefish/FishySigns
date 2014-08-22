@@ -48,7 +48,7 @@ public abstract class FishySign extends Anchor implements IAnchorable {
 		FishySign fishySign = FishySignClassLoader.getInstance().makeFishySign(new UnloadedSign(sign));
 		if (fishySign != null) {
 			if (fishySign.validateOnCreate(player.getName())) {
-				Log.get().logInfo(player.getName() 
+				Log.get().info(player.getName() 
                                   + " has created a " 
                                   + fishySign.getClass().getSimpleName()
                                   + " at " + fishySign.getLocation());

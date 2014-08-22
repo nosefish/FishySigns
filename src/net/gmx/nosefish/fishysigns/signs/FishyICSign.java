@@ -143,7 +143,7 @@ public abstract class FishyICSign
 		public void handleIOLeverStateChanged(IOSignal oldSignal,
 				IOSignal newSignal) {
 			// we always deny, this shouldn't be called at all
-			Log.get().logWarning("FishyICSign.LeverClickBlocker: " +
+			Log.get().warn("FishyICSign.LeverClickBlocker: " +
 					"handleIOLeverStateChanged was called unexpectedly.");
 		}
 		
