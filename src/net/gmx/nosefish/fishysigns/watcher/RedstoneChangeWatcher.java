@@ -22,7 +22,7 @@ import net.gmx.nosefish.fishysigns.watcher.activator.FishyRedstoneChange;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 
 public class RedstoneChangeWatcher extends BlockLocationWatcher{
-	private static RedstoneChangeWatcher instance = new RedstoneChangeWatcher();
+	private static final RedstoneChangeWatcher instance = new RedstoneChangeWatcher();
 	static {
 		FishySigns.addWatcher(instance);
 	}
@@ -43,6 +43,7 @@ public class RedstoneChangeWatcher extends BlockLocationWatcher{
 		this.rsChangeCollector.submit();
 	}
 	
+    @Override
 	public void disable() {
 		super.disable();
 		this.rsChangeCollector.cancel();
@@ -97,6 +98,7 @@ public class RedstoneChangeWatcher extends BlockLocationWatcher{
 			changeBuffer.get().add(rsChange);
 		}
 		
+        @Override
 		public void doStuff(){
 			this.setNextTask(null);
 			List<FishyRedstoneChange> lastTickChanges = changeBuffer.get();
@@ -127,7 +129,7 @@ public class RedstoneChangeWatcher extends BlockLocationWatcher{
 		
 		@Override
 		public void doStuff() {
-			Map<Long, ActivatorRedstone> activators = new TreeMap<Long, ActivatorRedstone>();
+			Map<Long, ActivatorRedstone> activators = new TreeMap<>();
 			// group changes by ids to activate
 			for (FishyRedstoneChange change : changes) {
 				Set<Long> idsToActivate = blockLocationIndex.get(change.getLocation());

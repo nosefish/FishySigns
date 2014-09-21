@@ -27,7 +27,11 @@ import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
 
 
 public final class InventoryBlockWatcher implements IFishyWatcher {
-	protected static InventoryBlockWatcher instance = new InventoryBlockWatcher(); 
+ 
+    /**
+     * Singleton instance
+     */
+    protected static final InventoryBlockWatcher instance = new InventoryBlockWatcher(); 
 	static {
 		FishySigns.addWatcher(instance);
 	}
@@ -54,9 +58,9 @@ public final class InventoryBlockWatcher implements IFishyWatcher {
 	protected BlockLocationWatcher singleBlocks = new BlockLocationWatcher(){};
 	protected Object addRemoveLock = new Object(); // the two indexes must be consistent
 	protected ConcurrentMapWithSet<FishyChunk, SmallCuboid> cuboids =
-			new ConcurrentMapWithSet<FishyChunk, SmallCuboid>();
+			new ConcurrentMapWithSet<>();
 	protected ConcurrentMapWithSet<SmallCuboid, Long> cuboidToId =
-			new ConcurrentMapWithSet<SmallCuboid, Long>();
+			new ConcurrentMapWithSet<>();
 
 
 
@@ -251,7 +255,7 @@ public final class InventoryBlockWatcher implements IFishyWatcher {
 					location.getIntZ());
 			if (blockId != -1) {
 				Map<FishyLocationInt, Integer> activationMap =
-						new HashMap<FishyLocationInt, Integer>(1, 1.0F);
+						new HashMap<>(1, 1.0F);
 				activationMap.put(location, blockId);
 				InitialActivationTask activate = 
 						new InitialActivationTask(idToActivate, activationMap);
@@ -261,7 +265,7 @@ public final class InventoryBlockWatcher implements IFishyWatcher {
 		
 		private void activateCuboid() {
 			Map<FishyLocationInt, Integer> activationMap =
-					new HashMap<FishyLocationInt, Integer>(8, 0.9F);
+					new HashMap<>(8, 0.9F);
 			// iterate over cuboid
 			// TODO: use TileEntityList for larger cuboids
 			for (int x = cuboid.getLowPoint().getIntX();
@@ -324,7 +328,7 @@ public final class InventoryBlockWatcher implements IFishyWatcher {
 		
 		@Override
 		public void doStuff() {
-			Set<Long> toActivate = new TreeSet<Long>(); // HashSet may be faster, but they're so wasteful
+			Set<Long> toActivate = new TreeSet<>(); // HashSet may be faster, but they're so wasteful
 			// find activatables from singleBlocks
 			Set<Long> idSet = singleBlocks.blockLocationIndex.get(location);
 			if (idSet != null) {
@@ -350,7 +354,7 @@ public final class InventoryBlockWatcher implements IFishyWatcher {
 		}
 		
 		private Set<SmallCuboid> findCuboidsContainingLocation() {
-			Set<SmallCuboid> resultSet = new LinkedHashSet<SmallCuboid>();
+			Set<SmallCuboid> resultSet = new LinkedHashSet<>();
 			FishyChunk[] chunks = new FishyChunk[] {
 					FishyChunk.getChunkContaining(location),
 					FishyChunk.getChunkContaining(location.addIntVector(chunkVectors[0])),

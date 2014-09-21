@@ -13,7 +13,7 @@ import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
 import net.gmx.nosefish.fishysigns.world.FishyBlockState;
 
 public class BlockDestructionWatcher extends BlockLocationWatcher {
-	private static BlockDestructionWatcher instance = 
+	private static final BlockDestructionWatcher instance = 
 			new BlockDestructionWatcher();
 	static {
 		FishySigns.addWatcher(instance);

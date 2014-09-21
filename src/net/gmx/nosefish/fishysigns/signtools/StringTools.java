@@ -9,6 +9,9 @@ public class StringTools {
 	 * Converts first occurrence of pattern
 	 * to upper case. if the pattern is not found, 
 	 * the input string is returned.
+     * @param pattern
+     * @param inputString
+     * @return 
 	 */
 	public static String patternInStringToUpperCase(Pattern pattern, String inputString) {
 		Matcher matcher = pattern.matcher(inputString);

@@ -12,8 +12,8 @@ import net.gmx.nosefish.fishysigns.plugin.engine.ServerTicker;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 
 public class SetLeverTask extends FishyTask {
-	private FishyLocationInt location;
-	private boolean newState;
+	private final FishyLocationInt location;
+	private final boolean newState;
 
 	public SetLeverTask(FishyLocationInt location, boolean newState, long targetTick) {
 		this.location = location;

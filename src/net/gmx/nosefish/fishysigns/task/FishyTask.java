@@ -36,9 +36,6 @@ public abstract class FishyTask implements Runnable, Delayed, TickDelayed {
 	 * Constructs a FishyTask that will immediately be executed in the
 	 * server thread. Use the <code>set*</code> methods to adjust the
 	 * behavior before calling <code>submit</code>.
-	 * 
-	 * @param runnable 
-	 * 		the task to run as a FishyTask
 	 */
 	public FishyTask() {
 		this.taskProperties = EnumSet.noneOf(FishyTaskProperties.class);
@@ -155,10 +152,7 @@ public abstract class FishyTask implements Runnable, Delayed, TickDelayed {
 			submitTimeNanos = System.nanoTime();
 			submitTick = ServerTicker.getInstance().getTickCount();
 			FishyTaskManager.submit(this);
-		} catch(RejectedExecutionException e) {
-			this.cancel();
-			return false;
-		} catch (DisabledException e){
+		} catch(RejectedExecutionException | DisabledException e) {
 			this.cancel();
 			return false;
 		}
@@ -192,9 +186,7 @@ public abstract class FishyTask implements Runnable, Delayed, TickDelayed {
 				}
 				if (! cancelled) this.submit();
 			}
-		} catch(RejectedExecutionException e) {
-			this.cancel();
-		} catch (DisabledException e){
+		} catch(RejectedExecutionException | DisabledException e) {
 			this.cancel();
 		}
 	}
@@ -226,6 +218,8 @@ public abstract class FishyTask implements Runnable, Delayed, TickDelayed {
 
 	/**
 	 * Gets the remaining delay time.
+     * @param timeUnit
+     * @return 
 	 */
 	@Override
 	public synchronized long getDelay(TimeUnit timeUnit) {
@@ -235,6 +229,7 @@ public abstract class FishyTask implements Runnable, Delayed, TickDelayed {
 
 	/**
 	 * Gets the remaining number of delay ticks.
+     * @return 
 	 */
 	@Override
 	public synchronized long getTickDelay() {
@@ -250,6 +245,8 @@ public abstract class FishyTask implements Runnable, Delayed, TickDelayed {
 
 	/**
 	 * Compares results of <code>getDelay</code>, as required by the <code>Delayed</code> interface
+     * @param other
+     * @return 
 	 */
 	@Override
 	public int compareTo(Delayed other) {

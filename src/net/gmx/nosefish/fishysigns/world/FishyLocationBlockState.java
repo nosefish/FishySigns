@@ -1,5 +1,6 @@
 package net.gmx.nosefish.fishysigns.world;
 
+import java.util.Objects;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
 import net.canarymod.api.world.blocks.Block;
 
@@ -43,8 +44,13 @@ public final class FishyLocationBlockState {
 	public short getData() {
 		return state.getData();
 	}
-	
-	@Override
+
+    /**
+     *
+     * @param other
+     * @return
+     */
+    @Override
 	public boolean equals(Object other) {
 		if (other instanceof FishyLocationBlockState) {
 			FishyLocationBlockState otherState = (FishyLocationBlockState) other;
@@ -53,4 +59,12 @@ public final class FishyLocationBlockState {
 		}
 		return false;
 	}
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + Objects.hashCode(this.location);
+        hash = 97 * hash + Objects.hashCode(this.state);
+        return hash;
+    }
 }

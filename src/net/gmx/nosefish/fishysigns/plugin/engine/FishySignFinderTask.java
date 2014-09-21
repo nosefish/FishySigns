@@ -22,7 +22,7 @@ public class FishySignFinderTask extends FishyTask{
 
 	@Override
 	public void doStuff() {
-		List<UnloadedSign> signsToLoad= new LinkedList<UnloadedSign>();
+		List<UnloadedSign> signsToLoad= new LinkedList<>();
 		for (FishyChunk fishyChunk : chunks) {
 			World world = fishyChunk.getWorld().getWorldIfLoaded();
 			Chunk chunk = world.getChunk(fishyChunk.getChunkX(), fishyChunk.getChunkZ());

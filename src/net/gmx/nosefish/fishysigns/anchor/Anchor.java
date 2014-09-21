@@ -15,10 +15,11 @@ import java.util.List;
  */
 public class Anchor implements IAnchor {
 
-	private Object lock = new Object();
-	private List<IAnchorable> anchoredObjects = new ArrayList<IAnchorable>(4);
+	private final Object lock = new Object();
+	private final List<IAnchorable> anchoredObjects = new ArrayList<>(4);
 	private boolean raised = false;
 	
+    @Override
 	public final void anchor(IAnchorable toAnchor) {
 		synchronized(lock) {
 			if (raised) {

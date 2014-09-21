@@ -24,14 +24,14 @@ import net.gmx.nosefish.fishysigns.watcher.activator.IActivator;
  *
  */
 public class ServerOddTickWatcher implements IFishyWatcher{
-	private static ServerOddTickWatcher instance = new ServerOddTickWatcher();
+	private static final ServerOddTickWatcher instance = new ServerOddTickWatcher();
 	static {
 		FishySigns.addWatcher(instance);
 	}
 	
 	private boolean enabled = false;
 	
-	private Set<Long> registeredIds = new LinkedHashSet<Long>(32);
+	private final Set<Long> registeredIds = new LinkedHashSet<>(32);
 	
 	public static ServerOddTickWatcher getInstance() {
 		return instance;
@@ -84,7 +84,7 @@ public class ServerOddTickWatcher implements IFishyWatcher{
 		@Override
 		public void doStuff() {
 			IActivator activator = new ActivatorServerTick(tick);
-			Map<Long, IActivator> activationMap = new LinkedHashMap<Long, IActivator>();
+			Map<Long, IActivator> activationMap = new LinkedHashMap<>();
 			// let's get this over with quickly in order to not block registration
 			// (which happens in the main thread) longer than necessary
 			synchronized(registeredIds) {

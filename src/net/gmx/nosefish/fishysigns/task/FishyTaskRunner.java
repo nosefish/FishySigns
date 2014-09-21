@@ -119,13 +119,14 @@ public class FishyTaskRunner {
 	 *
 	 */
 	private class FishyServerTask extends ServerTask {
-		private FishyTask task;
+		private final FishyTask task;
 		
 		public FishyServerTask(FishyTask task) {
 			super(owner, 0, false);
 			this.task = task;
 		}
 		
+        @Override
 		public void run() {
 			task.run();
 		}
@@ -138,6 +139,7 @@ public class FishyTaskRunner {
 	 *
 	 */
 	private static class ShutdownTask extends FishyTask {
+        @Override
 		public void doStuff() {
 			Log.get().warn("The ShutdownTask is being executed. This should not happen. Please file a bug report.");
 		}
@@ -173,10 +175,7 @@ public class FishyTaskRunner {
 							break;
 						}
 						sort(task);
-					} catch(InterruptedException e) {
-						break;
-					} catch(RejectedExecutionException e) {
-						// shutting down
+					} catch(InterruptedException | RejectedExecutionException e) {
 						break;
 					}
 				}

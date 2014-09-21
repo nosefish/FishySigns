@@ -9,6 +9,7 @@ import java.util.WeakHashMap;
 
 import net.canarymod.Canary;
 import net.canarymod.api.world.Chunk;
+import net.canarymod.api.world.UnknownWorldException;
 import net.canarymod.api.world.World;
 import net.canarymod.plugin.Plugin;
 import net.canarymod.tasks.ServerTaskManager;
@@ -26,13 +27,13 @@ import net.gmx.nosefish.fishysigns.watcher.ChunkTracker;
 import net.gmx.nosefish.fishysigns.watcher.IFishyWatcher;
 
 public class FishySigns extends Plugin implements TaskOwner{
-	private static Set<IFishyWatcher> watchers = Collections.newSetFromMap(
+	private static final Set<IFishyWatcher> watchers = Collections.newSetFromMap(
 	                                             new WeakHashMap<IFishyWatcher, Boolean>(8, 0.9f));
-	private static volatile WeakReference<FishySigns> instance = new WeakReference<FishySigns>(null);
+	private static volatile WeakReference<FishySigns> instance = new WeakReference<>(null);
 	
 	@Override
 	public boolean enable() {
-		instance = new WeakReference<FishySigns>(this);
+		instance = new WeakReference<>(this);
 		Log.initialize(this);
 		ServerTicker.getInstance().start();
 		FishyTaskManager.initialize(this);
@@ -48,7 +49,7 @@ public class FishySigns extends Plugin implements TaskOwner{
 	
 	@Override
 	public void disable() {
-		new WeakReference<FishySigns>(null);
+		instance = new WeakReference<>(null);
 		disableWatchers();
 		FishyTaskManager.getInstance().shutdown();
 		ServerTicker.getInstance().shutdown();
@@ -100,6 +101,7 @@ public class FishySigns extends Plugin implements TaskOwner{
 	private void findAllLoadedFishySigns() {
 		List<String> allWorlds = Canary.getServer().getWorldManager().getExistingWorlds();
 		for (String worldName: allWorlds) {
+            try {
 			World world = Canary.getServer().getWorldManager().getWorld(worldName, false);
 			if (world == null) {
 				continue;
@@ -108,14 +110,16 @@ public class FishySigns extends Plugin implements TaskOwner{
 			if (loadedChunks == null || loadedChunks.isEmpty()) {
 				continue;
 			}
-			List<FishyChunk> loadedFishyChunks = new ArrayList<FishyChunk>(loadedChunks.size());
+			List<FishyChunk> loadedFishyChunks = new ArrayList<>(loadedChunks.size());
 			for (Chunk chunk : loadedChunks) {
 				ChunkTracker.getInstance().addChunk(chunk);
 				loadedFishyChunks.add(new FishyChunk(chunk));
 			}
 			FishyTask signFinder = new FishySignFinderTask(loadedFishyChunks);
 			signFinder.submit();
+            } catch(UnknownWorldException e) {
+                Log.get().warn(e);
+            }
 		}
 	}
-
 }

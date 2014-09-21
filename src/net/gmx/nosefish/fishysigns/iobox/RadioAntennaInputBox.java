@@ -15,14 +15,14 @@ public class RadioAntennaInputBox<T> extends AnchoredActivatableBox {
 	private final Class<T> signalType;
 	private final RadioTower<T> radioTower;
 	private final String bandName;
-	private IRadioInputHandler<T> handler;
+	private final IRadioInputHandler<T> handler;
 	
 	public static <T> RadioAntennaInputBox<T> createAndRegister(
 			RadioTower<T> tower,
 			String bandName,
 			IRadioInputHandler<T> handler,
 			Class<T> signalType) {
-		RadioAntennaInputBox<T> box = new RadioAntennaInputBox<T>(tower, bandName, handler, signalType);
+		RadioAntennaInputBox<T> box = new RadioAntennaInputBox<>(tower, bandName, handler, signalType);
 		registerWithActivationManagerAndAnchor(box, handler);
 		return box;
 	}
@@ -50,7 +50,8 @@ public class RadioAntennaInputBox<T> extends AnchoredActivatableBox {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void activate(IActivator activator) {
-		if (! ActivatorRadio.class.equals(activator.getClass())) {
+		if ((activator == null) ||
+            (! ActivatorRadio.class.equals(activator.getClass()))) {
 			String aClass = ((activator == null) ? "null" : activator.getClass().getSimpleName());
 			throw new UnsupportedActivatorException("Expected "
 					+ ActivatorRadio.class.getSimpleName()

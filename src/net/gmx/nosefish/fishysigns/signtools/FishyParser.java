@@ -139,7 +139,7 @@ public class FishyParser {
 	 */
 	public static Map<String, Token> findTokens(String inputString, List<Rule> rules) {
 		String restString = inputString;
-		Map<String, Token> tokenMap = new LinkedHashMap<String, Token>(8);
+		Map<String, Token> tokenMap = new LinkedHashMap<>(8);
 		for (Rule rule : rules) {
 			Matcher matcher = rule.pattern.matcher(restString); 
 			if (matcher.find()) {

@@ -40,7 +40,8 @@ public class ServerOddTickInputBox extends AnchoredActivatableBox {
 
 	@Override
 	public void activate(IActivator activator) {
-		if(! ActivatorServerTick.class.equals(activator.getClass())) {
+		if((activator == null)
+           || (! ActivatorServerTick.class.equals(activator.getClass()))) {
 			String aClass = ((activator == null) ? "null" : activator.getClass().getSimpleName());
 			throw new UnsupportedActivatorException("Expected "
 					+ ActivatorServerTick.class.getSimpleName()

@@ -112,7 +112,7 @@ public abstract class FishySign extends Anchor implements IAnchorable {
 	 * Do not perform any long-running operations here. Remember that
 	 * the sign is not registered yet - do not put initialization code here!
 	 * 
-	 * @param player name of the player who created this sign.
+     * @param playerName
 	 * @return <code>true</code>, if the sign is valid and should be registered as a FishySign, <code>false</code> if it is invalid.
 	 */
 	public abstract boolean validateOnCreate(String playerName);
@@ -215,7 +215,7 @@ public abstract class FishySign extends Anchor implements IAnchorable {
 	/**
 	 * Do not call this constructor directly.
 	 * Use <code>loadAndRegister</code> or <code>createAndRegister</code> to instantiate new FishySigns.
-	 * @param UnloadedSign sign
+     * @param sign
 	 */
 	public FishySign(UnloadedSign sign) {
 		this.location = sign.getLocation();

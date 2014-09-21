@@ -17,9 +17,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class RadioTower<T> {
 	// used for tuneIn and remove
-	private ReentrantLock receiverLock = new ReentrantLock();
+	private final ReentrantLock receiverLock = new ReentrantLock();
 	
-	private ConcurrentMap<String, RadioBand<T>> bands = new ConcurrentHashMap<String, RadioBand<T>>();
+	private final ConcurrentMap<String, RadioBand<T>> bands = new ConcurrentHashMap<>();
 	
 	/**
 	 * Broadcast a signal.

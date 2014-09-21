@@ -15,7 +15,7 @@ import net.gmx.nosefish.fishysigns.task.FishyTask;
  *
  */
 public class FishySignLoaderTask extends FishyTask {
-	private List<UnloadedSign> signsToLoad;
+	private final List<UnloadedSign> signsToLoad;
 	
 	public FishySignLoaderTask(List<UnloadedSign> signsToLoad) {
 		super();

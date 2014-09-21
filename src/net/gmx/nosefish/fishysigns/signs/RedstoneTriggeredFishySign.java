@@ -73,7 +73,7 @@ public abstract class RedstoneTriggeredFishySign
 	/**
 	 * Do not call this constructor directly.
 	 * Use <code>FishySign.loadAndRegister</code> or <code>FishySign.createAndRegister</code> to instantiate new FishySigns.
-	 * @param UnloadedSign sign
+     * @param sign
 	 */
 	public RedstoneTriggeredFishySign(UnloadedSign sign) {
 		super(sign);

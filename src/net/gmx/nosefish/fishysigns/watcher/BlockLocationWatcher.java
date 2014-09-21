@@ -11,13 +11,13 @@ public abstract class BlockLocationWatcher implements IFishyWatcher{
 	 * When iterating over it, you must synchronize on it!
 	 */
 	protected final ConcurrentMapWithSet<FishyLocationInt, Long> blockLocationIndex =
-			new ConcurrentMapWithSet<FishyLocationInt, Long>();
+			new ConcurrentMapWithSet<>();
 
 	/**
 	 * Registers an <code>Activatable</code> with a block location
 	 * to be handled by the watcher.
 	 * 
-	 * @param activatable
+     * @param activatableID
 	 * @param location
 	 */
 	public void register(Long activatableID, FishyLocationInt location) {
@@ -29,8 +29,7 @@ public abstract class BlockLocationWatcher implements IFishyWatcher{
 	 * Removes a registered <code>Activatable</code> from
 	 * this watcher.
 	 * 
-	 * @param activatable
-	 * @param location
+     * @param activatableID
 	 */
 	public void remove(Long activatableID) {
 		blockLocationIndex.removeValue(activatableID);

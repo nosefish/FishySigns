@@ -11,7 +11,7 @@ public class CircleLightningTask extends FishyTask implements IRunnableXY {
 	private final FishyLocationInt target;
 	private final double chance;
 	private final int radius;
-	private boolean fill;
+	private final boolean fill;
 	
 	public CircleLightningTask(FishyLocationInt target, int radius, double chance, boolean fill) {
 		this.target = target;

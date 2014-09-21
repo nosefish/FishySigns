@@ -23,11 +23,11 @@ import net.gmx.nosefish.fishysigns.signs.FishySign;
 
 // TODO: allow other plugins to register classes
 public final class FishySignClassLoader {
-	private static FishySignClassLoader instance = new FishySignClassLoader();
-	private static String FISHYSIGNDIR = "plugins/fishysigns";
+	private static final FishySignClassLoader instance = new FishySignClassLoader();
+	private static final String FISHYSIGNDIR = "fishysigns";
 	// known FishySign classes
-	private Map<SignRegEx, Class<? extends FishySign>> signTypes = 
-			new ConcurrentHashMap<SignRegEx, Class<? extends FishySign>>();
+	private final Map<SignRegEx, Class<? extends FishySign>> signTypes = 
+			new ConcurrentHashMap<>();
 
 	public static FishySignClassLoader getInstance() {
 		return instance;
@@ -55,6 +55,7 @@ public final class FishySignClassLoader {
 		}
 		Log.get().info("Loading FishySign classes from jars in " + signDir.getAbsolutePath().toString());
 		FilenameFilter onlyJarFiles = new FilenameFilter() {
+            @Override
 			public boolean accept(File dir, String name) {
 				return name.toLowerCase().endsWith(".jar");
 			}
@@ -123,10 +124,7 @@ public final class FishySignClassLoader {
 					if (value instanceof Pattern[]) {
 						return new SignRegEx((Pattern[]) value);
 					}
-				} catch (IllegalArgumentException e) {
-					Log.get().trace(
-							"Exception while loading FishySignIdentifier", e);
-				} catch (IllegalAccessException e) {
+				} catch (IllegalArgumentException | IllegalAccessException e) {
 					Log.get().trace(
 							"Exception while loading FishySignIdentifier", e);
 				}
@@ -165,17 +163,12 @@ public final class FishySignClassLoader {
 				// instantiate
 				Constructor<? extends FishySign> signConstructor = signClass.getConstructor(UnloadedSign.class); 
 				fishySign = signConstructor.newInstance(sign);
-			} catch (InstantiationException e) {
-				Log.get().trace("Failed to instantiate FishySign", e);
-			} catch (IllegalAccessException e) {
-				Log.get().trace("Failed to instantiate FishySign", e);
-			} catch (IllegalArgumentException e) {
-				Log.get().trace("Failed to instantiate FishySign", e);
-			} catch (SecurityException e) {
-				Log.get().trace("Failed to instantiate FishySign", e);
-			} catch (InvocationTargetException e) {
-				Log.get().trace("Failed to instantiate FishySign", e);
-			} catch (NoSuchMethodException e) {
+			} catch (InstantiationException
+                | IllegalAccessException
+                | IllegalArgumentException
+                | SecurityException
+                | InvocationTargetException
+                | NoSuchMethodException e) {
 				Log.get().trace("Failed to instantiate FishySign", e);
 			}
 		}

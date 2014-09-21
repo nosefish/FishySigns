@@ -36,7 +36,8 @@ public class RightClickInputBox extends AnchoredActivatableBox {
 
 	@Override
 	public void activate(IActivator activator) {
-		if (! ActivatorPlayerRightClick.class.equals(activator.getClass())) {
+		if ((activator == null) || 
+            (! ActivatorPlayerRightClick.class.equals(activator.getClass()))) {
 			String aClass = ((activator == null) ? "null" : activator.getClass().getSimpleName());
 			throw new UnsupportedActivatorException("Expected "
 					+ ActivatorPlayerRightClick.class.getSimpleName()

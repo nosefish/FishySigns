@@ -21,7 +21,7 @@ import net.gmx.nosefish.fishysigns.watcher.activator.ActivatorRadio;
 public class RadioBand<T> {
 	private final String name;
 	// synchronize on receivers!
-	private final Set<Long> receivers = new TreeSet<Long>();
+	private final Set<Long> receivers = new TreeSet<>();
 	private volatile T signal = null;
 	
 	/**

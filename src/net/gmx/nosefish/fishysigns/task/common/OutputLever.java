@@ -8,6 +8,7 @@ import net.canarymod.api.world.blocks.Block;
 import net.canarymod.api.world.blocks.BlockType;
 import net.gmx.nosefish.fishylib.blocks.BlockInfo;
 import net.gmx.nosefish.fishylib.worldmath.FishyLocationInt;
+import net.gmx.nosefish.fishysigns.Log;
 import net.gmx.nosefish.fishysigns.exception.DisabledException;
 import net.gmx.nosefish.fishysigns.plugin.engine.ServerTicker;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
@@ -159,7 +160,7 @@ public class OutputLever {
 			try {
 				delay = onTick - ServerTicker.getInstance().getTickCount();
 			} catch (DisabledException e) {
-				e.printStackTrace();
+				Log.get().trace(e);
 			}
 			return delay;
 		}

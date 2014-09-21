@@ -9,24 +9,24 @@ import java.util.Arrays;
  *
  */
 public class IOSignal {
-	public static IOSignal ZERO_LENGTH = new IOSignal(new boolean[0]);
+	public static final IOSignal ZERO_LENGTH = new IOSignal(new boolean[0]);
 	
-	public static IOSignal L = new IOSignal(false);
-	public static IOSignal H = new IOSignal(true);
+	public static final IOSignal L = new IOSignal(false);
+	public static final IOSignal H = new IOSignal(true);
 	
-	public static IOSignal LL = new IOSignal(false, false);
-	public static IOSignal HH = new IOSignal(true, true);
-	public static IOSignal LH = new IOSignal(false, true);
-	public static IOSignal HL = new IOSignal(true, false);
+	public static final IOSignal LL = new IOSignal(false, false);
+	public static final IOSignal HH = new IOSignal(true, true);
+	public static final IOSignal LH = new IOSignal(false, true);
+	public static final IOSignal HL = new IOSignal(true, false);
 	
-	public static IOSignal LLL = new IOSignal(false, false, false);
-	public static IOSignal HHH = new IOSignal(true, true, true);
-	public static IOSignal HLL = new IOSignal(true, false, false);
-	public static IOSignal LHL = new IOSignal(false, true, false);
-	public static IOSignal LLH = new IOSignal(false, false, true);
-	public static IOSignal LHH = new IOSignal(false, true, true);
-	public static IOSignal HLH = new IOSignal(true, false, true);
-	public static IOSignal HHL = new IOSignal(true, true, false);
+	public static final IOSignal LLL = new IOSignal(false, false, false);
+	public static final IOSignal HHH = new IOSignal(true, true, true);
+	public static final IOSignal HLL = new IOSignal(true, false, false);
+	public static final IOSignal LHL = new IOSignal(false, true, false);
+	public static final IOSignal LLH = new IOSignal(false, false, true);
+	public static final IOSignal LHH = new IOSignal(false, true, true);
+	public static final IOSignal HLH = new IOSignal(true, false, true);
+	public static final IOSignal HHL = new IOSignal(true, true, false);
 
 	private static final IOSignal[][] predef = new IOSignal[][] {
 		{L, H},

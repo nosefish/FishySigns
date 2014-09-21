@@ -35,14 +35,14 @@ public final class ActivationManager implements IFishyWatcher{
 	private final Lock indexReadLock = indexLock.readLock();
 	private final Lock indexWriteLock = indexLock.writeLock();
 	private long idCounter; // guarded by indexLock
-	private Map<Long, IActivatable> idIndex; // guarded by indexLock
+	private final Map<Long, IActivatable> idIndex; // guarded by indexLock
 	
 	/**
 	 * Private constructor for singleton
 	 */
 	private ActivationManager() {
 		this.idCounter = 0L;
-		this.idIndex = new HashMap<Long, IActivatable>(64, 0.8F);
+		this.idIndex = new HashMap<>(64, 0.8F);
 	}
 	
 	/**

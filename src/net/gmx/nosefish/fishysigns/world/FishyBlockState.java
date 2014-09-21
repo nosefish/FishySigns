@@ -34,7 +34,16 @@ public class FishyBlockState {
 		return this.typeId == block.getTypeId()
 				&& this.data == block.getData();
 	}
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + this.typeId;
+        hash = 29 * hash + this.data;
+        return hash;
+    }
 	
+    @Override
 	public boolean equals(Object other) {
 		if (other instanceof FishyBlockState) {
 			FishyBlockState otherState = (FishyBlockState) other;

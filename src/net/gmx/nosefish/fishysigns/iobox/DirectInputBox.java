@@ -79,9 +79,9 @@ public class DirectInputBox extends AnchoredActivatableBox {
 	                                   int signPinCount,
 	                                   IDirectInputHandler handler) {
 		this.boxLocation = inputBoxLocation;
-		this.physInput = new ArrayList<FishyLocationInt>(physicalPinCount);
+		this.physInput = new ArrayList<>(physicalPinCount);
 		this.physSignal = new boolean[physicalPinCount];
-		this.phys2sign = new TreeMap<Integer, Integer>();
+		this.phys2sign = new TreeMap<>();
 		this.signSignal = new boolean[signPinCount];
 		this.handler = handler;
 	}
@@ -273,8 +273,11 @@ public class DirectInputBox extends AnchoredActivatableBox {
 
 	@Override
 	public void activate(IActivator activator) {
-		if (! ActivatorRedstone.class.equals(activator.getClass())) {
-			String aClass = ((activator == null) ? "null" : activator.getClass().getSimpleName());
+		if ((activator == null) ||
+            (! ActivatorRedstone.class.equals(activator.getClass()))) {
+			String aClass = ((activator == null) 
+                      ? "null" 
+                      : activator.getClass().getSimpleName());
 			throw new UnsupportedActivatorException("Expected "
 					+ ActivatorRedstone.class.getSimpleName()
 					+ ", but received "

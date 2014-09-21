@@ -117,11 +117,11 @@ public abstract class FishyICSign
 	 *
 	 */
 	protected static class LeverClickBlocker implements ILeverIOHandler {
-		private WeakReference<IAnchor> anchor;
+		private final WeakReference<IAnchor> anchor;
 		private static final String message = "Please do not click IC outputs!";
 		
 		public LeverClickBlocker(IAnchor anchor) {
-			this.anchor = new WeakReference<IAnchor>(anchor);
+			this.anchor = new WeakReference<>(anchor);
 		}
 		
 		@Override

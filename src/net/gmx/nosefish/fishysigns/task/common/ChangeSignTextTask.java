@@ -28,9 +28,6 @@ public class ChangeSignTextTask extends FishyTask {
 	 *     
 	 * @param newText
 	 *     the text to write on the sign. Must have length 4! <code>null</code> lines will be ignored
-	 *     
-	 * @param sendPacket
-	 *     whether or not to notify players of the sign update
 	 */
 	public ChangeSignTextTask(FishyLocationInt signLocation, String[] newText) {
 		this.signLoc = signLocation;

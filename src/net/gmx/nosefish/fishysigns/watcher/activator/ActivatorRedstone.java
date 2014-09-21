@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ActivatorRedstone implements IActivator {
-	private List<FishyRedstoneChange> changes = new LinkedList<FishyRedstoneChange>();
+	private final List<FishyRedstoneChange> changes = new LinkedList<>();
 
 	public List<FishyRedstoneChange> getChanges() {
 		return changes;

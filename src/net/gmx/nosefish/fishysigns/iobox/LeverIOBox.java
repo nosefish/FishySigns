@@ -22,8 +22,8 @@ public class LeverIOBox extends AnchoredActivatableBox {
 		 * Called when a player clicks an output lever and switches its state.
 		 * 
 		 * @param playerName
-		 * @param oldSignal
-		 * @param newSignal
+         * @param currentSignal
+         * @param pinClicked
 		 * @return
 		 *     true to allow the change, false to undo it.
 		 */
@@ -41,7 +41,7 @@ public class LeverIOBox extends AnchoredActivatableBox {
 		public void handleIOLeverStateChanged (IOSignal oldSignal, IOSignal newSignal);
 	}
 	
-	protected Object lock = new Object();
+	protected final Object lock = new Object();
 	protected final ArrayList<FishyLocationInt> physOutput;
 	protected final boolean[] physSignal;
 	
@@ -54,7 +54,7 @@ public class LeverIOBox extends AnchoredActivatableBox {
 	}
 	
 	public LeverIOBox(int pinCount, ILeverIOHandler handler) {
-		this.physOutput = new ArrayList<FishyLocationInt>(pinCount);
+		this.physOutput = new ArrayList<>(pinCount);
 		this.physSignal = new boolean[pinCount];
 		this.handler = handler;
 	}
@@ -203,7 +203,8 @@ public class LeverIOBox extends AnchoredActivatableBox {
 	//------------------------------------------------------------------------
 	@Override
 	public void activate(IActivator activator) {
-		if (! ActivatorPlayerRightClick.class.equals(activator.getClass())) {
+		if ((activator == null)
+            || (! ActivatorPlayerRightClick.class.equals(activator.getClass()))) {
 			String aClass = ((activator == null) ? "null" : activator.getClass().getSimpleName());
 			throw new UnsupportedActivatorException("Expected "
 					+ ActivatorPlayerRightClick.class.getSimpleName()

@@ -11,7 +11,7 @@ import java.util.List;
  *
  */
 public class ActivatorBlocks implements IActivator {
-	protected final List<FishyBlockStateChange> blocks = new LinkedList<FishyBlockStateChange>();
+	protected final List<FishyBlockStateChange> blocks = new LinkedList<>();
 	
 	/**
 	 * Constructor

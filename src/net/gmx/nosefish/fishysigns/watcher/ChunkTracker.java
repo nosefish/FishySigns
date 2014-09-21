@@ -14,14 +14,12 @@ import net.gmx.nosefish.fishysigns.plugin.engine.ActivationManager;
 import net.gmx.nosefish.fishysigns.plugin.engine.FishySignFinderTask;
 import net.gmx.nosefish.fishysigns.task.FishyTask;
 import net.gmx.nosefish.fishysigns.watcher.activator.ActivatorChunkUnloaded;
-import net.gmx.nosefish.fishysigns.Log;
 
 import net.canarymod.api.world.Chunk;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.world.ChunkLoadedHook;
 import net.canarymod.hook.world.ChunkUnloadHook;
 import net.canarymod.plugin.Priority;
-import net.gmx.nosefish.fishylib.worldmath.FishyWorld;
 
 /**
  * Provides a thread-safe way to determine whether a chunk or a chunk cluster is loaded.

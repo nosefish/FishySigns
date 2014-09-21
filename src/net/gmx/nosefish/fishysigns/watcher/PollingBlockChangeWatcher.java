@@ -39,7 +39,7 @@ import net.gmx.nosefish.fishysigns.world.FishyBlockState;
  *
  */
 public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
-	private static PollingBlockChangeWatcher instance = new PollingBlockChangeWatcher();	
+	private static final PollingBlockChangeWatcher instance = new PollingBlockChangeWatcher();	
 	static{
 		FishySigns.addWatcher(instance);
 	}
@@ -52,7 +52,7 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 	 * Use <code>getInstance</code> to access it.
 	 */
 	private PollingBlockChangeWatcher() {
-		this.worldBlockStates = new ConcurrentHashMap<FishyLocationInt, FishyBlockState>(64, 0.9F, 2);
+		this.worldBlockStates = new ConcurrentHashMap<>(64, 0.9F, 2);
 	}
 
 
@@ -75,7 +75,6 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 	 * <code>Activatable</code> registers for the same block later.
 	 * Make sure to handle them.
 	 *
-	 * @param id
 	 * @param location
 	 */
 	@Override
@@ -117,7 +116,7 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 
 
 	private List<FishyBlockStateChange> pollBlockStates() {
-		List<FishyBlockStateChange> changes = new LinkedList<FishyBlockStateChange>();
+		List<FishyBlockStateChange> changes = new LinkedList<>();
 		if(worldBlockStates.isEmpty()) {
 			return changes;
 		}
@@ -169,7 +168,7 @@ public final class PollingBlockChangeWatcher extends BlockLocationWatcher{
 
 		@Override
 		public void doStuff() {
-			Map<Long, ActivatorBlocks> toActivate = new TreeMap<Long, ActivatorBlocks>();
+			Map<Long, ActivatorBlocks> toActivate = new TreeMap<>();
 			for (FishyBlockStateChange change : changes) {
 				// find out who is interested in this change
 				Set<Long> recipients = PollingBlockChangeWatcher.this.blockLocationIndex.get(change.getLocation());
